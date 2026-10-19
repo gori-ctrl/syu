@@ -1,0 +1,2571 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>就活ボード</title>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Layout: 上部に「今週 / 企業 / ストック」の3タブ。各タブの中は小さな切り替え(一覧/比較、ESテンプレ/面接の質問)だけにして、細かい編集はすべてシートに逃がす。 */
+:root {
+  --bg: #EEF1F6;
+  --surface: #FFFFFF;
+  --ink: #131A2B;
+  --muted: #566077;
+  --line: #D5DBE6;
+  --accent: #2748D9;
+  --on-accent: #FFFFFF;
+  --ok: #0E7A55;
+  --warn: #A35A00;
+  --bad: #C0322B;
+  --n-bg: #E6EAF2; --n-fg: #444D63;
+  --a-bg: #E3E9FD; --a-fg: #1F3BB8;
+  --w-bg: #FCEBCF; --w-fg: #7A4300;
+  --g-bg: #D5F1E5; --g-fg: #0A5A3F;
+  --x-fg: #6B7388;
+  --scrim: rgba(12, 17, 30, 0.5);
+  --display: "Dela Gothic One", "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E121C; --surface: #161B28; --ink: #E8ECF6; --muted: #9AA4BC; --line: #29314A;
+    --accent: #7B93FF; --on-accent: #0E121C; --ok: #4CC89A; --warn: #E0A04A; --bad: #FF7A70;
+    --n-bg: #222A3F; --n-fg: #B6BFD4; --a-bg: #222C52; --a-fg: #A9B8FF;
+    --w-bg: #3A2D14; --w-fg: #F0C27A; --g-bg: #12372B; --g-fg: #7AE0B5; --x-fg: #8F98AE;
+    --scrim: rgba(0, 0, 0, 0.62);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E121C; --surface: #161B28; --ink: #E8ECF6; --muted: #9AA4BC; --line: #29314A;
+  --accent: #7B93FF; --on-accent: #0E121C; --ok: #4CC89A; --warn: #E0A04A; --bad: #FF7A70;
+  --n-bg: #222A3F; --n-fg: #B6BFD4; --a-bg: #222C52; --a-fg: #A9B8FF;
+  --w-bg: #3A2D14; --w-fg: #F0C27A; --g-bg: #12372B; --g-fg: #7AE0B5; --x-fg: #8F98AE;
+  --scrim: rgba(0, 0, 0, 0.62);
+  color-scheme: dark;
+}
+
+/* 背景色(スキン)。data-skin で選ぶ。初期は黒。auto は端末の設定に従う(上の既定のまま)。 */
+:root[data-skin="black"] {
+  --bg: #000000; --surface: #111214; --ink: #EDEEF0; --muted: #9A9DA5; --line: #26282D;
+  --accent: #7B93FF; --on-accent: #0A0B10; --ok: #4CC89A; --warn: #E0A04A; --bad: #FF7A70;
+  --n-bg: #1D1F24; --n-fg: #B9BCC6; --a-bg: #1C2347; --a-fg: #A9B8FF;
+  --w-bg: #33280F; --w-fg: #F0C27A; --g-bg: #0F3025; --g-fg: #7AE0B5; --x-fg: #8D9099;
+  --scrim: rgba(0, 0, 0, 0.7); color-scheme: dark;
+}
+:root[data-skin="dark"] {
+  --bg: #0E121C; --surface: #161B28; --ink: #E8ECF6; --muted: #9AA4BC; --line: #29314A;
+  --accent: #7B93FF; --on-accent: #0E121C; --ok: #4CC89A; --warn: #E0A04A; --bad: #FF7A70;
+  --n-bg: #222A3F; --n-fg: #B6BFD4; --a-bg: #222C52; --a-fg: #A9B8FF;
+  --w-bg: #3A2D14; --w-fg: #F0C27A; --g-bg: #12372B; --g-fg: #7AE0B5; --x-fg: #8F98AE;
+  --scrim: rgba(0, 0, 0, 0.62); color-scheme: dark;
+}
+:root[data-skin="light"] {
+  --bg: #F5F6F8; --surface: #FFFFFF; --ink: #151821; --muted: #5C6272; --line: #DDE0E7;
+  --accent: #2748D9; --on-accent: #FFFFFF; --ok: #0E7A55; --warn: #A35A00; --bad: #C0322B;
+  --n-bg: #E9ECF2; --n-fg: #444D63; --a-bg: #E3E9FD; --a-fg: #1F3BB8;
+  --w-bg: #FCEBCF; --w-fg: #7A4300; --g-bg: #D5F1E5; --g-fg: #0A5A3F; --x-fg: #6B7388;
+  --scrim: rgba(12, 17, 30, 0.5); color-scheme: light;
+}
+:root[data-skin="cream"] {
+  --bg: #F6F1E7; --surface: #FFFDF8; --ink: #2B2620; --muted: #6E665A; --line: #DDD3C0;
+  --accent: #B4532A; --on-accent: #FFFFFF; --ok: #1F7A4F; --warn: #9A5600; --bad: #B6342C;
+  --n-bg: #ECE5D6; --n-fg: #5A5348; --a-bg: #F6E3D8; --a-fg: #8E3E1B;
+  --w-bg: #F8E6C4; --w-fg: #7A4300; --g-bg: #D9EBDD; --g-fg: #1D5A3A; --x-fg: #7A7264;
+  --scrim: rgba(40, 30, 10, 0.5); color-scheme: light;
+}
+:root[data-skin="mist"] {
+  --bg: #EEF1F6; --surface: #FFFFFF; --ink: #131A2B; --muted: #566077; --line: #D5DBE6;
+  --accent: #2748D9; --on-accent: #FFFFFF; --ok: #0E7A55; --warn: #A35A00; --bad: #C0322B;
+  --n-bg: #E6EAF2; --n-fg: #444D63; --a-bg: #E3E9FD; --a-fg: #1F3BB8;
+  --w-bg: #FCEBCF; --w-fg: #7A4300; --g-bg: #D5F1E5; --g-fg: #0A5A3F; --x-fg: #6B7388;
+  --scrim: rgba(12, 17, 30, 0.5); color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.6;
+  padding-block: 20px 104px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.app { max-width: 820px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
+
+/* header */
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.date { margin: 0; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+h1 { margin: 2px 0 0; font-family: var(--display); font-weight: 400; font-size: 28px; line-height: 1.2; letter-spacing: 0.02em; text-wrap: balance; }
+.hdr-r { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sync { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.sync::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.sync.ok::before { background: var(--ok); }
+.sync.bad::before { background: var(--bad); }
+.note { margin: 0; font-size: 13px; color: var(--w-fg); background: var(--w-bg); border-radius: 8px; padding: 8px 12px; }
+
+/* main tabs */
+.tabs { display: flex; border-bottom: 1px solid var(--line); }
+.tabs button { flex: 1; max-width: 200px; background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -1px; padding: 10px 12px; font-size: 15px; font-weight: 500; color: var(--muted); }
+.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--accent); }
+.tabs .mono { font-size: 12px; margin-left: 4px; }
+
+/* sub views */
+.viewbar { margin-bottom: 14px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); overflow: hidden; }
+.seg button { border: 0; background: none; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 700; }
+.controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.fchip { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 500; white-space: nowrap; }
+.fchip .mono { font-size: 12px; color: var(--muted); }
+.fchip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
+.fchip[aria-pressed="true"] .mono { color: inherit; }
+input[type="search"] { appearance: none; }
+
+/* week */
+.week-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.summary { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--muted); }
+.summary b { font-family: var(--mono); font-size: 16px; color: var(--ink); font-weight: 500; margin-left: 4px; }
+.summary b.over { color: var(--bad); }
+.day { margin-bottom: 16px; }
+.day-h { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--muted); display: flex; gap: 8px; align-items: baseline; }
+.day-h.over { color: var(--bad); }
+.day-h .mono { font-weight: 400; }
+.wk { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.wk-main { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; text-align: left; background: none; border: 0; padding: 12px 8px 12px 14px; width: 100%; }
+.wk-main:hover { background: var(--bg); }
+.wk-t { font-size: 13px; color: var(--muted); padding-top: 2px; }
+.wk-b { display: flex; flex-direction: column; min-width: 0; }
+.wk-b b { overflow-wrap: anywhere; }
+.wk-b span { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.wk .mini { margin: 0 12px 0 0; }
+
+/* list */
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.list li + li { border-top: 1px solid var(--line); }
+.row { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; background: none; border: 0; padding: 14px 16px; }
+.row:hover { background: var(--bg); }
+.r-top { display: flex; align-items: center; gap: 8px; }
+.r-name { font-size: 16px; font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.r-kind { flex: none; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; line-height: 18px; }
+.r-top .chip { margin-left: auto; }
+.r-role { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.r-next { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.r-next-t { min-width: 0; overflow-wrap: anywhere; }
+.r-todo { font-size: 14px; overflow-wrap: anywhere; }
+.r-note { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.due { flex: none; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.due.soon { color: var(--warn); font-weight: 500; }
+.due.over { color: var(--bad); font-weight: 500; }
+.bar { display: flex; gap: 3px; width: 140px; max-width: 100%; margin-top: 4px; }
+.bar i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.bar i.on { background: var(--bar); }
+.list .empty { padding: 28px 18px; text-align: center; color: var(--muted); }
+.list .empty b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+.list .empty .btn { margin-top: 12px; }
+p.empty { padding: 28px 18px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; margin: 0; }
+p.empty b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+p.empty .btn { margin-top: 12px; }
+
+/* templates & questions */
+.trow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; padding-right: 12px; }
+.trow .row { padding-right: 4px; }
+.t-count { font-size: 12px; color: var(--muted); }
+.t-count.over { color: var(--bad); font-weight: 500; }
+.t-prev { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.t-used { font-size: 12px; color: var(--a-fg); overflow-wrap: anywhere; }
+.mini { margin-top: 12px; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 700; }
+.mini:hover { border-color: var(--accent); color: var(--accent); }
+
+.chip { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
+.t-n { background: var(--n-bg); color: var(--n-fg); }
+.t-a { background: var(--a-bg); color: var(--a-fg); }
+.t-w { background: var(--w-bg); color: var(--w-fg); }
+.t-g { background: var(--g-bg); color: var(--g-fg); }
+.t-x { background: transparent; color: var(--x-fg); border: 1px dashed var(--line); }
+
+/* compare */
+.cmp-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.cmp { display: flex; flex-direction: column; gap: 10px; width: 100%; text-align: left; background: none; border: 0; padding: 14px 16px; }
+.cmp:hover { background: var(--bg); }
+.cmp-h { display: flex; align-items: center; gap: 10px; }
+.cmp-rank { width: 20px; flex: none; color: var(--muted); font-size: 13px; }
+.cmp-score { margin-left: auto; font-size: 20px; font-weight: 500; }
+.cmp-bars { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px 14px; }
+.ax { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ax-n { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ax-d { display: flex; gap: 3px; }
+.ax-d i { flex: 1; height: 6px; border-radius: 2px; background: var(--line); }
+.ax-d i.on { background: var(--accent); }
+.cmp-sub { margin: 18px 0 8px; font-size: 13px; font-weight: 700; color: var(--muted); }
+
+/* add button */
+.fab {
+  position: fixed;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  height: 52px; padding: 0 22px; border: 0; border-radius: 999px;
+  background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 15px;
+  box-shadow: 0 6px 20px rgba(20, 30, 70, 0.28);
+}
+
+/* sheets */
+.overlay { position: fixed; inset: 0; z-index: 20; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+#aOverlay { z-index: 25; }
+.sheet { width: 100%; max-width: 560px; max-height: 92dvh; overflow-y: auto; background: var(--surface); border-radius: 16px 16px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+@media (min-width: 640px) {
+  .overlay { align-items: center; }
+  .sheet { border-radius: 16px; padding: 24px; }
+}
+.sheet h3 { margin: 0; font-size: 18px; font-weight: 900; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field > label, .field > .lab { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--muted); }
+input[type="text"], input[type="search"], input[type="date"], input[type="time"], input[type="number"], textarea, select { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 16px; }
+select { appearance: auto; }
+textarea { min-height: 88px; resize: vertical; }
+textarea.tall { min-height: 200px; line-height: 1.7; }
+textarea.short { min-height: 72px; }
+.opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.opt { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 500; }
+.opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
+.err { margin: 0; font-size: 13px; color: var(--bad); }
+.hint { margin: 0; font-size: 12px; color: var(--muted); }
+.hint.bad { color: var(--bad); }
+.hint a { color: var(--accent); font-weight: 700; }
+.counter { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.counter .mono.over { color: var(--bad); font-weight: 500; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.btn { height: 44px; padding: 0 20px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); flex: 1; }
+.btn.danger { color: var(--bad); margin-left: auto; }
+.btn.danger.armed { background: var(--bad); border-color: var(--bad); color: #fff; }
+.btn.sm { height: 32px; padding: 0 12px; font-size: 13px; }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.bsec { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.bsec h4 { margin: 0; font-size: 14px; }
+.brow { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* company sheet: タブ付きで1画面に収める */
+.sheet.tabbed { max-width: 640px; padding: 0; gap: 0; overflow: hidden; height: min(92dvh, 720px); }
+.sheet-h { padding: 16px 16px 8px; }
+.stabs { display: flex; gap: 2px; padding: 0 10px; border-bottom: 1px solid var(--line); overflow-x: auto; flex: none; }
+.stabs button { flex: none; background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -1px; padding: 8px 12px; font-size: 14px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+.stabs button[aria-selected="true"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--accent); }
+.stabs .mono { font-size: 12px; margin-left: 4px; color: var(--accent); }
+.sbody { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+.spanel { display: flex; flex-direction: column; gap: 14px; }
+.sfoot { flex: none; display: flex; gap: 8px; flex-wrap: wrap; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--surface); }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.ev, .sub, .fit, .axr { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.ev input, .ev select, .ev textarea, .sub input, .sub select, .sub textarea, .axr input, .axr select { background: var(--surface); }
+.ev-top { display: flex; flex-wrap: wrap; gap: 6px; }
+.ev-top > select { flex: 1 1 140px; width: auto; }
+.ev-top > input[type="date"] { flex: 1 1 150px; width: auto; }
+.ev-top > input[type="time"] { flex: 1 1 110px; width: auto; }
+.sub-top, .axr { flex-direction: row; gap: 6px; align-items: center; }
+.sub-top { display: flex; }
+.sub-top > input, .axr > input { flex: 1; min-width: 0; width: auto; }
+.axr > select { flex: 0 0 110px; width: 110px; }
+.x { flex: none; width: 40px; height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-size: 18px; line-height: 1; color: var(--muted); }
+.x:hover { color: var(--bad); border-color: var(--bad); }
+.ev-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.ev-done { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.ev-done input { width: 18px; height: 18px; min-height: 0; padding: 0; }
+.gcal { color: var(--accent); font-weight: 700; font-size: 13px; }
+.ev details summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); padding: 2px 0; }
+.ev details textarea { margin-top: 6px; min-height: 96px; }
+.sub textarea { min-height: 120px; line-height: 1.7; }
+.fit-h { display: flex; align-items: center; gap: 8px; }
+.rate { display: flex; gap: 6px; }
+.rb { flex: 1; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; }
+.rb[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.rb.clear { flex: 0 0 52px; font-weight: 500; color: var(--muted); }
+.rb.clear[aria-pressed="true"] { color: var(--on-accent); }
+.fit-total { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; }
+.fit-total .mono { font-size: 20px; font-weight: 500; }
+
+.ph { display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; }
+.ph-top { display: flex; align-items: baseline; gap: 10px; }
+.ph-w { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; min-width: 0; }
+.ph-n { margin-left: auto; flex: none; font-size: 13px; color: var(--muted); }
+.ph-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.ph-bar i { display: block; height: 100%; background: var(--accent); }
+.ph-src { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.lede { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.cheer { overflow: hidden; white-space: nowrap; border-radius: 8px; background: var(--g-bg); color: var(--g-fg); font-size: 14px; font-weight: 500; padding: 8px 0; }
+.cheer span { display: inline-block; padding-left: 100%; animation: cheer 20s linear 1 forwards; }
+@keyframes cheer { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .cheer { white-space: normal; padding: 8px 12px; }
+  .cheer span { animation: none; padding-left: 0; }
+}
+.fn { display: flex; flex-direction: column; gap: 14px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.fn-row { display: flex; flex-direction: column; gap: 4px; }
+.fn-h { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.fn-bar { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.fn-bar i { display: block; height: 100%; background: var(--accent); }
+.fn-sum { margin: 0; font-size: 14px; }
+.fn-res { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.fn-res b { font-family: var(--mono); font-size: 16px; color: var(--ink); margin-left: 4px; font-weight: 500; }
+.chk { display: flex; gap: 8px; align-items: center; }
+.chk input[type="checkbox"] { width: 22px; height: 22px; min-height: 0; flex: none; }
+.chk input[type="text"] { flex: 1; min-width: 0; width: auto; }
+.chk.done input[type="text"] { color: var(--muted); text-decoration: line-through; }
+.ev-res { width: auto; min-height: 36px; padding: 4px 8px; font-size: 14px; }
+.ev-links { display: flex; gap: 12px; flex-wrap: wrap; }
+.ev-opts { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.ev-end { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.ev-end input { flex: 1; width: auto; }
+.searchbar { display: flex; gap: 8px; }
+.searchbar input { flex: 1; min-width: 0; }
+.searchbar select { flex: 0 0 auto; width: auto; max-width: 46%; }
+.rescount { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.vsep { flex: none; width: 1px; margin: 4px 2px; background: var(--line); }
+.r-hit { font-size: 12px; color: var(--a-fg); }
+.grp-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px 8px 16px; background: var(--bg); font-size: 13px; font-weight: 700; color: var(--muted); }
+.grp-h .mini { margin: 0; }
+.row.grp-r { padding-left: 28px; }
+.cmpw { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+.cmp-pick { margin: 12px 12px 0 0; }
+.mini[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.cmpt-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 16px; }
+.cmpt { border-collapse: collapse; width: 100%; }
+.cmpt th, .cmpt td { padding: 10px 12px; border-top: 1px solid var(--line); vertical-align: top; text-align: left; font-size: 13px; min-width: 150px; overflow-wrap: anywhere; }
+.cmpt thead th { border-top: 0; }
+.cmpt th[scope="row"] { position: sticky; left: 0; background: var(--surface); font-weight: 700; color: var(--muted); min-width: 84px; width: 84px; }
+.cmpt td.best { font-weight: 700; color: var(--accent); }
+.cmpt-h { display: flex; flex-direction: column; gap: 2px; text-align: left; background: none; border: 0; padding: 0; font-size: 14px; }
+.cmpt-h span { font-size: 12px; color: var(--muted); font-weight: 400; }
+.cmpt-x { margin-top: 6px; background: none; border: 0; padding: 0; font-size: 12px; color: var(--muted); text-decoration: underline; }
+.cmpt-text { white-space: pre-wrap; font-weight: 400; color: var(--ink); }
+.skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.skin { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-align: left; font-weight: 500; font-size: 14px; }
+.skin[aria-pressed="true"] { border-color: var(--accent); outline: 2px solid var(--accent); font-weight: 700; }
+.sw { position: relative; flex: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(128, 128, 128, 0.45); overflow: hidden; }
+.sw i { position: absolute; left: 6px; right: 6px; top: 6px; bottom: 15px; border-radius: 3px; }
+.sw b { position: absolute; left: 6px; right: 6px; bottom: 5px; height: 5px; border-radius: 3px; }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30; background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; opacity: 0; visibility: hidden; transition: opacity 0.2s; max-width: calc(100% - 32px); }
+.toast.show { opacity: 1; visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<script>try { document.documentElement.setAttribute('data-skin', localStorage.getItem('shukatsu-skin-v1') || 'black'); } catch (e) { document.documentElement.setAttribute('data-skin', 'black'); }</script>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <p class="date" id="today"></p>
+      <h1>就活ボード</h1>
+    </div>
+    <div class="hdr-r">
+      <span class="sync" id="sync">接続中</span>
+      <button type="button" class="btn sm" id="skinBtn">背景色</button>
+      <button type="button" class="btn sm" id="backupBtn" hidden>バックアップ</button>
+    </div>
+  </header>
+  <div class="cheer" id="cheer" role="status" hidden><span id="cheerText"></span></div>
+  <p class="note" id="note" hidden>バックアップをすると、別端末でも使えます。</p>
+
+  <nav class="tabs" role="tablist" aria-label="表示の切り替え">
+    <button type="button" role="tab" id="tab-week" aria-selected="true" aria-controls="panel-week" data-tab="week">今週</button>
+    <button type="button" role="tab" id="tab-apps" aria-selected="false" aria-controls="panel-apps" data-tab="apps">企業<span class="mono" id="appCount"></span></button>
+    <button type="button" role="tab" id="tab-stock" aria-selected="false" aria-controls="panel-stock" data-tab="stock">ストック</button>
+  </nav>
+
+  <div id="panel-week" role="tabpanel" aria-labelledby="tab-week">
+    <div class="week-h">
+      <p class="summary" id="weekSummary"></p>
+      <button type="button" class="btn sm" id="icsBtn" hidden>カレンダーに入れる</button>
+    </div>
+    <div id="weekBody"></div>
+  </div>
+
+  <div id="panel-apps" role="tabpanel" aria-labelledby="tab-apps" hidden>
+    <div class="viewbar">
+      <div class="seg" id="avSeg">
+        <button type="button" data-av="list" aria-pressed="true">一覧</button>
+        <button type="button" data-av="compare" aria-pressed="false">志望度の比較</button>
+        <button type="button" data-av="funnel" aria-pressed="false">通過率</button>
+      </div>
+    </div>
+    <div id="av-list">
+      <div class="controls">
+        <div class="searchbar">
+          <input type="search" id="cSearch" autocomplete="off" placeholder="企業名・メモ・ESなどで検索" aria-label="企業を検索">
+          <select id="cSort" aria-label="並び順">
+            <option value="due">期日が近い順</option>
+            <option value="fit">志望度が高い順</option>
+            <option value="updated">更新が新しい順</option>
+            <option value="name">名前順</option>
+          </select>
+        </div>
+        <div class="seg" id="kindSeg" style="align-self:flex-start">
+          <button type="button" data-kind="all" aria-pressed="true">すべて</button>
+          <button type="button" data-kind="intern" aria-pressed="false">インターン</button>
+          <button type="button" data-kind="main" aria-pressed="false">本選考</button>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="rescount" id="cCount" hidden><span id="cCountT"></span><button type="button" class="btn sm" id="cClear">条件をクリア</button></div>
+      </div>
+      <ul class="list" id="list"></ul>
+    </div>
+    <div id="av-compare" hidden>
+      <div class="cmp-top">
+        <p class="hint">総合点の高い順に並びます。「比べる」を2〜4件に付けると、横並びで比べられます。</p>
+        <button type="button" class="btn sm" id="axBtn">軸を編集</button>
+      </div>
+      <div id="cmpBody"></div>
+    </div>
+    <div id="av-funnel" hidden>
+      <div id="fnBody"></div>
+    </div>
+  </div>
+
+  <div id="panel-stock" role="tabpanel" aria-labelledby="tab-stock" hidden>
+    <div class="viewbar">
+      <div class="seg" id="svSeg">
+        <button type="button" data-sv="tpl" aria-pressed="true">ESテンプレ</button>
+        <button type="button" data-sv="q" aria-pressed="false">面接の質問</button>
+        <button type="button" data-sv="ph" aria-pressed="false">頻出フレーズ</button>
+      </div>
+    </div>
+    <div id="sv-tpl">
+      <div class="controls">
+        <input type="search" id="tSearch" autocomplete="off" placeholder="タイトル・本文で検索" aria-label="ESテンプレを検索">
+        <div class="chips" id="catChips"></div>
+      </div>
+      <ul class="list" id="tplList"></ul>
+    </div>
+    <div id="sv-q" hidden>
+      <div class="controls">
+        <input type="search" id="qSearch" autocomplete="off" placeholder="質問・答え・企業名で検索" aria-label="面接の質問を検索">
+        <div class="chips" id="qChips"></div>
+      </div>
+      <ul class="list" id="qList"></ul>
+    </div>
+    <div id="sv-ph" hidden>
+      <p class="lede">ESテンプレと、企業ごとに入れた提出ESの本文から、2回以上くり返し出てくる言い回しを拾います。同じ文章は1件として数えます。</p>
+      <div class="controls"><div class="chips" id="phChips"></div></div>
+      <ul class="list" id="phList"></ul>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="fab" id="add">＋ 企業を追加</button>
+
+<!-- 企業シート -->
+<div class="overlay" id="overlay" hidden>
+  <form class="sheet tabbed" id="form" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" novalidate>
+    <div class="sheet-h"><h3 id="sheetTitle">企業を追加</h3></div>
+    <div class="stabs" role="tablist" aria-label="企業の項目">
+      <button type="button" role="tab" id="stab-basic" data-stab="basic" aria-selected="true">基本</button>
+      <button type="button" role="tab" id="stab-ev" data-stab="ev" aria-selected="false">予定</button>
+      <button type="button" role="tab" id="stab-chk" data-stab="chk" aria-selected="false">準備</button>
+      <button type="button" role="tab" id="stab-sub" data-stab="sub" aria-selected="false">ES</button>
+      <button type="button" role="tab" id="stab-memo" data-stab="memo" aria-selected="false">メモ</button>
+      <button type="button" role="tab" id="stab-fit" data-stab="fit" aria-selected="false">志望度</button>
+    </div>
+    <div class="sbody">
+      <div class="spanel" data-sec="basic">
+        <div class="field">
+          <label for="f-name">企業名</label>
+          <input type="text" id="f-name" autocomplete="off" maxlength="200" placeholder="企業名">
+          <p class="err" id="f-err" hidden>企業名を入力してください。</p>
+        </div>
+        <div class="field">
+          <span class="lab">区分</span>
+          <div class="opts" id="f-kind">
+            <button type="button" class="opt" data-kind="intern" aria-pressed="true">インターン</button>
+            <button type="button" class="opt" data-kind="main" aria-pressed="false">本選考</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-role">職種・コース</label>
+          <input type="text" id="f-role" autocomplete="off" maxlength="200" placeholder="例: 開発エンジニア">
+        </div>
+        <div class="field">
+          <span class="lab">状況</span>
+          <div class="opts" id="f-status"></div>
+          <p class="hint" id="f-join" hidden><span id="f-jointext"></span> <button type="button" class="btn sm" id="f-joinbtn">参加日を予定に追加</button></p>
+        </div>
+        <div class="field">
+          <label for="f-next">次にやること</label>
+          <input type="text" id="f-next" autocomplete="off" maxlength="300" placeholder="例: ESを仕上げる、履歴書をメールで送る">
+        </div>
+        <div class="field">
+          <label for="f-url">マイページ・募集ページのURL</label>
+          <input type="text" id="f-url" inputmode="url" autocomplete="off" maxlength="1000" placeholder="https://">
+          <p class="hint" id="f-ulink" hidden><a id="f-ua" href="#" target="_blank" rel="noopener noreferrer">ページを開く ↗</a></p>
+          <p class="err" id="f-uerr" hidden>http:// または https:// で始まるURLを入力してください。</p>
+          <p class="hint">パスワードはここに書かないでください。</p>
+        </div>
+      </div>
+
+      <div class="spanel" data-sec="memo" hidden>
+        <div class="field">
+          <label for="f-review">クチコミ・評判</label>
+          <textarea id="f-review" maxlength="5000" placeholder="口コミサイトや先輩から聞いたこと(残業・雰囲気・離職など)。出どころも書いておくと後で見返せます"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-impr">説明会・面談での所感</label>
+          <textarea id="f-impr" maxlength="5000" placeholder="社員の雰囲気、印象に残った話、疑問に思ったこと"></textarea>
+        </div>
+        <div class="field">
+          <span class="lab">逆質問のストック</span>
+          <div id="f-rq" class="stack"></div>
+        </div>
+        <div class="field">
+          <label for="f-note">その他メモ</label>
+          <textarea id="f-note" maxlength="5000" placeholder="志望動機の方向性、気になる点など"></textarea>
+        </div>
+      </div>
+
+      <div class="spanel" data-sec="ev" hidden>
+        <div class="sect-h" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <p class="hint">説明会・面接・締切などを日付つきで入れます。日付のある予定は「今週」に並びます。</p>
+          <button type="button" class="btn sm" id="ev-add">＋ 予定</button>
+        </div>
+        <div id="ev-list"></div>
+      </div>
+
+      <div class="spanel" data-sec="chk" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <p class="hint">この企業でやることのチェックリストです。項目は自由に書き換えられます。</p>
+          <button type="button" class="btn sm" id="chk-add">＋ 項目</button>
+        </div>
+        <div id="chk-list"></div>
+      </div>
+
+      <div class="spanel" data-sec="sub" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <p class="hint">この企業に出したESの設問と本文を残します。テンプレを選ぶと本文に入ります。</p>
+          <button type="button" class="btn sm" id="sub-add">＋ ES</button>
+        </div>
+        <div id="sub-list"></div>
+      </div>
+
+      <div class="spanel" data-sec="fit" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <p class="hint">軸ごとに1〜5で評価します。使わない軸は「未」のままで構いません。</p>
+          <button type="button" class="btn sm" id="fit-axes">軸を編集</button>
+        </div>
+        <div id="fit-list" class="stack"></div>
+        <div class="fit-total"><span>総合</span><span class="mono" id="fit-total">未評価</span></div>
+        <div class="field">
+          <label for="f-pros">迷いのメモ: 良い点</label>
+          <textarea id="f-pros" class="short" maxlength="2000" placeholder="この企業・コースの魅力"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-cons">気になる点</label>
+          <textarea id="f-cons" class="short" maxlength="2000" placeholder="不安なこと、確かめたいこと"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-decide">決め手・結論</label>
+          <textarea id="f-decide" class="short" maxlength="2000" placeholder="どちらにするか決めた理由、決めるための条件など"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="sfoot">
+      <button type="submit" class="btn primary" id="f-save">保存</button>
+      <button type="button" class="btn" id="f-cancel">閉じる</button>
+      <button type="button" class="btn" id="f-copy" hidden>別コースを追加</button>
+      <button type="button" class="btn danger" id="f-del" hidden>削除</button>
+    </div>
+  </form>
+</div>
+
+<!-- ESテンプレシート -->
+<div class="overlay" id="tOverlay" hidden>
+  <form class="sheet" id="tForm" role="dialog" aria-modal="true" aria-labelledby="tSheetTitle" novalidate>
+    <h3 id="tSheetTitle">テンプレを追加</h3>
+    <div class="field">
+      <label for="t-title">タイトル</label>
+      <input type="text" id="t-title" autocomplete="off" maxlength="200" placeholder="例: 自己PR(サークル運営)">
+      <p class="err" id="t-err" hidden>タイトルを入力してください。</p>
+    </div>
+    <div class="field">
+      <span class="lab">種類</span>
+      <div class="opts" id="t-cat"></div>
+    </div>
+    <div class="field">
+      <label for="t-limit">文字数の上限(任意)</label>
+      <input type="number" id="t-limit" inputmode="numeric" min="0" max="5000" placeholder="例: 400">
+    </div>
+    <div class="field">
+      <label for="t-body">本文</label>
+      <textarea id="t-body" class="tall" placeholder="企業ごとに書き換える前の元の文章や、使えるエピソードの素材を書いておきます。"></textarea>
+      <div class="counter">
+        <button type="button" class="btn sm" id="t-skel">構成の雛形を入れる</button>
+        <span><span class="mono" id="t-count">0字</span> <span>(改行を除く)</span></span>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn primary">保存</button>
+      <button type="button" class="btn" id="t-cancel">閉じる</button>
+      <button type="button" class="btn danger" id="t-del" hidden>削除</button>
+    </div>
+  </form>
+</div>
+
+<!-- 面接の質問シート -->
+<div class="overlay" id="qOverlay" hidden>
+  <form class="sheet" id="qForm" role="dialog" aria-modal="true" aria-labelledby="qSheetTitle" novalidate>
+    <h3 id="qSheetTitle">質問を追加</h3>
+    <div class="field">
+      <label for="q-text" id="q-text-l">聞かれた質問</label>
+      <textarea id="q-text" class="short" maxlength="500" placeholder="例: 学生時代に力を入れたことは何ですか"></textarea>
+      <p class="err" id="q-err" hidden>質問を入力してください。</p>
+    </div>
+    <div class="field">
+      <span class="lab">種類</span>
+      <div class="opts" id="q-cat"></div>
+    </div>
+    <div class="field">
+      <label for="q-cid" id="q-cid-l">聞かれた企業(任意)</label>
+      <select id="q-cid"></select>
+    </div>
+    <div class="field">
+      <label for="q-ans" id="q-ans-l">自分の答え・改善メモ</label>
+      <textarea id="q-ans" class="tall" maxlength="5000" placeholder="答えた内容、うまく言えなかった点、次はこう答えたい、など"></textarea>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn primary">保存</button>
+      <button type="button" class="btn" id="q-cancel">閉じる</button>
+      <button type="button" class="btn danger" id="q-del" hidden>削除</button>
+    </div>
+  </form>
+</div>
+
+<!-- 志望度の軸シート -->
+<div class="overlay" id="aOverlay" hidden>
+  <form class="sheet" id="aForm" role="dialog" aria-modal="true" aria-labelledby="aSheetTitle" novalidate>
+    <h3 id="aSheetTitle">志望度の軸</h3>
+    <p class="hint">企業を比べるときの観点です。重みが大きい軸ほど、総合点に強く効きます。</p>
+    <div id="ax-list" class="stack"></div>
+    <div><button type="button" class="btn sm" id="ax-add">＋ 軸を追加</button></div>
+    <div class="actions">
+      <button type="submit" class="btn primary">保存</button>
+      <button type="button" class="btn" id="a-cancel">閉じる</button>
+    </div>
+  </form>
+</div>
+
+<!-- バックアップシート(この端末のみ保存のとき) -->
+<div class="overlay" id="bOverlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bTitle">
+    <h3 id="bTitle">バックアップ・端末の引っ越し</h3>
+    <p class="hint">データはこの端末のブラウザにだけ保存されています。別の端末で使うときや、念のための保管に使えます。</p>
+    <div class="bsec">
+      <h4>書き出す</h4>
+      <div class="brow">
+        <button type="button" class="btn" id="b-file">ファイルに書き出す</button>
+        <button type="button" class="btn" id="b-copy">コピーする</button>
+      </div>
+      <p class="hint mono" id="b-last"></p>
+    </div>
+    <div class="bsec">
+      <h4>読み込む</h4>
+      <div class="brow">
+        <button type="button" class="btn" id="b-pick">ファイルを選ぶ</button>
+        <input type="file" id="b-input" accept=".json,application/json" hidden>
+      </div>
+      <div class="field">
+        <label for="b-paste">コピーしたデータを貼り付け</label>
+        <textarea id="b-paste" placeholder="書き出したデータをここに貼り付けます"></textarea>
+      </div>
+      <div class="brow"><button type="button" class="btn" id="b-load">貼り付けたデータを読み込む</button></div>
+      <p class="hint">同じ企業・テンプレ・質問は上書き、それ以外は残ります。読み込みで削除されるものはありません。</p>
+    </div>
+    <p class="hint" id="b-msg" role="status" aria-live="polite"></p>
+    <div class="actions"><button type="button" class="btn" id="b-close">閉じる</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="kOverlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="kTitle">
+    <h3 id="kTitle">背景色</h3>
+    <p class="hint">この端末・このブラウザに記憶されます。</p>
+    <div class="skins" id="skinList"></div>
+    <div class="actions"><button type="button" class="btn primary" id="k-close">閉じる</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STATUS = [
+    { key: 'consider', label: '気になる', tone: 'n', step: 0, bar: 'var(--muted)' },
+    { key: 'es', label: 'ES準備中', tone: 'a', step: 1, bar: 'var(--accent)' },
+    { key: 'submitted', label: 'ES提出済み', tone: 'a', step: 2, bar: 'var(--accent)' },
+    { key: 'test', label: '適性検査', tone: 'w', step: 3, bar: 'var(--warn)' },
+    { key: 'interview', label: '面接', tone: 'w', step: 4, bar: 'var(--warn)' },
+    { key: 'offer', label: '内定', tone: 'g', step: 5, bar: 'var(--ok)' },
+    { key: 'out', label: '見送り', tone: 'x', step: 0, bar: 'var(--muted)' }
+  ];
+  var EVTYPES = [
+    { key: 'seminar', label: '説明会' },
+    { key: 'talk', label: '座談会・面談' },
+    { key: 'ob', label: 'OB・OG訪問' },
+    { key: 'test', label: '適性検査' },
+    { key: 'interview', label: '面接' },
+    { key: 'deadline', label: 'ES・書類締切' },
+    { key: 'intern', label: 'インターン・ワーク' },
+    { key: 'other', label: 'その他' }
+  ];
+  var KIND = { intern: 'インターン', main: '本選考' };
+  var CATS = ['自己PR', '志望動機', 'ガクチカ', '強み・弱み', 'その他'];
+  var QCATS = ['自己PR', '志望動機', 'ガクチカ', '強み・弱み', '逆質問', '専門・技術', 'その他'];
+  var WLABEL = { 1: '普通', 2: '重要', 3: '最重要' };
+  var DEFAULT_AXES = [
+    { id: 'a1', name: '事業内容', weight: 2 },
+    { id: 'a2', name: '働き方・環境', weight: 2 },
+    { id: 'a3', name: '成長・技術', weight: 2 },
+    { id: 'a4', name: '待遇・安定', weight: 1 }
+  ];
+  var ACTIVE = ['es', 'submitted', 'test', 'interview'];
+  var DEFAULT_CHECKS = ['企業研究', 'ES提出', 'Webテスト', '面接練習'];
+  var RES_TYPES = ['deadline', 'test', 'interview'];
+  var MAX_CHK = 20;
+  var LOCAL_KEY = 'shukatsu-board-v2';
+  var UI_KEY = 'shukatsu-ui-v1';
+  var SKELETON = '【結論】\n\n【きっかけ・背景】\n\n【取り組んだこと】\n\n【成果】\n\n【学び・今後に活かすこと】\n';
+  var MAX_EV = 30, MAX_SUB = 12, MAX_AXES = 6;
+  var KINDS = ['companies', 'templates', 'questions', 'settings'];
+  var IN_CLAUDE = !!(window.claude && window.claude.use);
+  var DATE_RE = /^\d{4}-\d{2}-\d{2}$/, TIME_RE = /^\d{2}:\d{2}$/;
+
+  var items = [], templates = [], questions = [], axes = DEFAULT_AXES.slice();
+  var loaded = false;
+  var store = null;
+  var tab = 'week', av = 'list', sv = 'tpl';
+  var filterStatus = 'all', filterKind = 'all', filterCat = 'all', qCat = 'all', qText = '', phCat = 'all', cmpSel = [], tText = '', cQuery = '', cSort = 'due', cFlags = {};
+  var editingId = null, editingTid = null, editingQid = null;
+  var form = { kind: 'intern', status: 'consider' };
+  var tform = { cat: CATS[0] }, qform = { cat: QCATS[0] };
+  var fEvents = [], fSubs = [], fScores = {}, fAxes = [], fChecks = [];
+  var opener = null;
+  var busy = false;
+  var delTimer = null, tDelTimer = null, qDelTimer = null, toastTimer = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function stOf(k) {
+    for (var i = 0; i < STATUS.length; i++) if (STATUS[i].key === k) return STATUS[i];
+    return STATUS[0];
+  }
+  function statusLabel(key, kind) { return key === 'offer' && kind === 'intern' ? '参加決定' : stOf(key).label; }
+  function offerLabel() { return filterKind === 'intern' ? '参加決定' : filterKind === 'main' ? '内定' : '内定・参加決定'; }
+  function typeLabel(k) {
+    for (var i = 0; i < EVTYPES.length; i++) if (EVTYPES[i].key === k) return EVTYPES[i].label;
+    return 'その他';
+  }
+  function validType(k) { return EVTYPES.some(function (t) { return t.key === k; }) ? k : 'other'; }
+  function parseDate(s) {
+    var p = String(s).split('-').map(Number);
+    return new Date(p[0], p[1] - 1, p[2]);
+  }
+  function todayIso() { var t = new Date(); return t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate()); }
+  function isOngoing(e) { return !!e.endDate && daysUntil(e.date) < 0 && daysUntil(e.endDate) >= 0; }
+  function evDay(e) { return isOngoing(e) ? todayIso() : e.date; }
+  function daysUntil(s) {
+    var t = new Date(); t.setHours(0, 0, 0, 0);
+    return Math.round((parseDate(s) - t) / 86400000);
+  }
+  function dueText(n) {
+    if (n < 0) return (-n) + '日超過';
+    if (n === 0) return '今日';
+    if (n === 1) return '明日';
+    return 'あと' + n + '日';
+  }
+  function dueClass(n) { return n < 0 ? 'over' : n <= 3 ? 'soon' : ''; }
+  function fmtDate(s) {
+    var d = parseDate(s);
+    return (d.getMonth() + 1) + '/' + d.getDate() + '(' + '日月火水木金土'[d.getDay()] + ')';
+  }
+  function fmtMD(s) { var d = parseDate(s); return (d.getMonth() + 1) + '/' + d.getDate(); }
+  function newId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+  function countChars(s) { return Array.from(String(s || '').replace(/[\r\n]/g, '')).length; }
+  function validUrl(u) { return /^https?:\/\/[^\s]+$/i.test(u); }
+  function goodId(id) { return typeof id === 'string' && /^[A-Za-z0-9_-]{1,60}$/.test(id) && id.indexOf('__') !== 0; }
+  function str(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
+  function num(v) { return typeof v === 'number' && isFinite(v) ? v : Date.now(); }
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+  }
+
+  /* ---------- データの整形 ---------- */
+  function cleanScores(sc) {
+    var out = {};
+    if (sc && typeof sc === 'object') {
+      Object.keys(sc).forEach(function (k) {
+        var v = parseInt(sc[k], 10);
+        if (goodId(k) && v >= 1 && v <= 5) out[k] = v;
+      });
+    }
+    return out;
+  }
+  function cleanAxes(list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).slice(0, MAX_AXES).forEach(function (a, i) {
+      if (!a || typeof a !== 'object') return;
+      var name = str(a.name, 40).trim();
+      if (!name) return;
+      var w = parseInt(a.weight, 10);
+      out.push({ id: goodId(a.id) ? a.id : 'a' + (i + 1) + Math.random().toString(36).slice(2, 4), name: name, weight: w >= 1 && w <= 3 ? w : 2 });
+    });
+    return out;
+  }
+  function cleanChecks(list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).slice(0, MAX_CHK).forEach(function (c) {
+      if (!c || typeof c !== 'object') return;
+      var label = str(c.label, 60).trim();
+      if (!label) return;
+      out.push({ id: goodId(c.id) ? c.id : newId('k'), label: label, done: !!c.done });
+    });
+    return out;
+  }
+  /* 古い形式(期日が1つだけ)のデータも、予定の一覧に読み替える。 */
+  function normCompany(o) {
+    var hasEv = Array.isArray(o.events);
+    var evs = (hasEv ? o.events : []).filter(function (e) { return e && typeof e === 'object'; }).map(function (e, i) {
+      return {
+        id: e.id ? String(e.id) : 'e' + i,
+        type: validType(e.type),
+        date: DATE_RE.test(e.date || '') ? e.date : '',
+        time: TIME_RE.test(e.time || '') ? e.time : '',
+        endDate: DATE_RE.test(e.endDate || '') && DATE_RE.test(e.date || '') && e.endDate >= e.date ? e.endDate : '',
+        title: String(e.title || ''),
+        log: String(e.log || ''),
+        result: e.result === 'pass' || e.result === 'fail' ? e.result : '',
+        done: !!e.done
+      };
+    });
+    if (!hasEv && DATE_RE.test(o.nextDate || '')) {
+      evs = [{ id: 'e0', type: 'other', date: o.nextDate, time: '', title: String(o.next || ''), log: '', done: false }];
+    }
+    var subs = (Array.isArray(o.subs) ? o.subs : []).filter(function (s) { return s && typeof s === 'object'; }).map(function (s, i) {
+      return { id: s.id ? String(s.id) : 's' + i, label: String(s.label || ''), tid: s.tid ? String(s.tid) : '', body: String(s.body || '') };
+    });
+    var out = Object.assign({}, o, { events: evs, subs: subs, scores: cleanScores(o.scores), checks: cleanChecks(o.checks), review: String(o.review || ''), impression: String(o.impression || ''), pros: String(o.pros || ''), cons: String(o.cons || ''), decide: String(o.decide || '') });
+    delete out.nextDate;
+    return out;
+  }
+  function toDoc(it) {
+    return {
+      name: it.name, kind: it.kind, role: it.role || '', status: it.status, next: it.next || '',
+      url: it.url || '', note: it.note || '', review: it.review || '', impression: it.impression || '', pros: it.pros || '', cons: it.cons || '', decide: it.decide || '', checks: it.checks || [], events: it.events || [], subs: it.subs || [], scores: it.scores || {},
+      createdAt: it.createdAt, updatedAt: it.updatedAt
+    };
+  }
+  function normQuestion(o) {
+    return {
+      id: o.id, q: String(o.q || ''), cat: QCATS.indexOf(o.cat) >= 0 ? o.cat : 'その他',
+      a: String(o.a || ''), cid: o.cid ? String(o.cid) : '', createdAt: o.createdAt, updatedAt: o.updatedAt
+    };
+  }
+  function evKey(e) { return e.date + ' ' + (e.time || '99:99'); }
+  function sortEvents(list) {
+    return list.slice().sort(function (a, b) {
+      if (!a.date !== !b.date) return a.date ? -1 : 1;
+      return evKey(a) < evKey(b) ? -1 : evKey(a) > evKey(b) ? 1 : 0;
+    });
+  }
+  function nextEvent(it) {
+    var l = it.events.filter(function (e) { return !e.done && e.date; });
+    return l.length ? sortEvents(l)[0] : null;
+  }
+  function allUpcoming() {
+    var out = [];
+    items.forEach(function (c) {
+      if (c.status === 'out') return;
+      c.events.forEach(function (e) { if (!e.done && e.date) out.push({ c: c, e: e }); });
+    });
+    return out.sort(function (a, b) { return evKey(a.e) < evKey(b.e) ? -1 : evKey(a.e) > evKey(b.e) ? 1 : 0; });
+  }
+  function evTitle(e) { return typeLabel(e.type) + (e.title ? ' · ' + e.title : ''); }
+  function doneLabel(e) { return e.type === 'deadline' ? '提出済み' : '完了'; }
+  function companyName(cid) {
+    for (var i = 0; i < items.length; i++) if (items[i].id === cid) return items[i].name;
+    return '';
+  }
+  function fitScore(it, scores) {
+    var sc = scores || it.scores || {}, sum = 0, w = 0;
+    axes.forEach(function (a) {
+      var s = sc[a.id] | 0;
+      if (s > 0) { sum += s * a.weight; w += a.weight; }
+    });
+    return w ? sum / w : null;
+  }
+
+  function sortItems(a, b) {
+    var ao = a.status === 'out', bo = b.status === 'out';
+    if (ao !== bo) return ao ? 1 : -1;
+    var ae = nextEvent(a), be = nextEvent(b);
+    var ad = ae ? evKey(ae) : '9999', bd = be ? evKey(be) : '9999';
+    if (ad !== bd) return ad < bd ? -1 : 1;
+    var du = (b.updatedAt || 0) - (a.updatedAt || 0);
+    return du || String(a.name).localeCompare(String(b.name), 'ja');
+  }
+
+  /* ---------- カレンダー ---------- */
+  function ymdCompact(d) { return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()); }
+  function evRange(e) {
+    var d = parseDate(e.date);
+    if (e.endDate) {
+      var ed = parseDate(e.endDate);
+      return { allDay: true, start: d, end: new Date(ed.getFullYear(), ed.getMonth(), ed.getDate() + 1) };
+    }
+    if (e.time) {
+      var hm = e.time.split(':').map(Number);
+      var s = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hm[0], hm[1]);
+      return { allDay: false, start: s, end: new Date(s.getTime() + (e.type === 'deadline' ? 30 : 60) * 60000) };
+    }
+    return { allDay: true, start: d, end: new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) };
+  }
+  function ymdhms(d) { return ymdCompact(d) + 'T' + p2(d.getHours()) + p2(d.getMinutes()) + '00'; }
+  function gcalUrl(company, e) {
+    if (!e.date) return '#';
+    var r = evRange(e);
+    var dates = r.allDay ? ymdCompact(r.start) + '/' + ymdCompact(r.end) : ymdhms(r.start) + '/' + ymdhms(r.end);
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+      '&text=' + encodeURIComponent((company || '就活') + ' ' + evTitle(e)) +
+      '&dates=' + dates + '&ctz=Asia%2FTokyo';
+  }
+  /* 締切の前日の朝に気づけるよう、前日の終日予定をつくるリンク。通知はカレンダー側の設定に従う。 */
+  function gcalRemindUrl(company, e) {
+    if (!e.date) return '#';
+    var d = parseDate(e.date);
+    var a = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+    var b = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+      '&text=' + encodeURIComponent('【明日締切】' + (company || '就活') + ' ' + evTitle(e)) +
+      '&details=' + encodeURIComponent('明日が締切です。提出前の最終確認をしましょう。') +
+      '&dates=' + ymdCompact(a) + '/' + ymdCompact(b) + '&ctz=Asia%2FTokyo';
+  }
+  function icsEsc(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+  function fold(line) {
+    var enc = new TextEncoder(), out = [], cur = '', bytes = 0;
+    Array.from(line).forEach(function (ch) {
+      var b = enc.encode(ch).length;
+      if (bytes + b > 75) { out.push(cur); cur = ' '; bytes = 1; }
+      cur += ch; bytes += b;
+    });
+    out.push(cur);
+    return out.join('\r\n');
+  }
+  function buildIcs(list) {
+    var now = new Date();
+    var stamp = now.getUTCFullYear() + p2(now.getUTCMonth() + 1) + p2(now.getUTCDate()) + 'T' + p2(now.getUTCHours()) + p2(now.getUTCMinutes()) + p2(now.getUTCSeconds()) + 'Z';
+    var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//shukatsu-board//JA', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:就活ボード'];
+    list.forEach(function (x) {
+      var r = evRange(x.e), desc = [];
+      if (x.e.title) desc.push(x.e.title);
+      if (x.c.url) desc.push(x.c.url);
+      L.push('BEGIN:VEVENT', 'UID:' + x.c.id + '-' + x.e.id + '@shukatsu-board', 'DTSTAMP:' + stamp);
+      if (r.allDay) { L.push('DTSTART;VALUE=DATE:' + ymdCompact(r.start), 'DTEND;VALUE=DATE:' + ymdCompact(r.end)); }
+      else { L.push('DTSTART:' + ymdhms(r.start), 'DTEND:' + ymdhms(r.end)); }
+      L.push('SUMMARY:' + icsEsc(x.c.name + ' ' + evTitle(x.e)));
+      if (desc.length) L.push('DESCRIPTION:' + icsEsc(desc.join('\n')));
+      L.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(x.c.name), 'TRIGGER:' + (r.allDay ? '-PT15H' : x.e.type === 'deadline' ? '-P1D' : '-PT60M'), 'END:VALARM', 'END:VEVENT');
+    });
+    L.push('END:VCALENDAR');
+    return L.map(fold).join('\r\n') + '\r\n';
+  }
+  /* ファイルの保存。Claudeのページ内では保存の許可を経由し、公開用ファイルでは通常のダウンロード。 */
+  function saveFile(name, text, mime) {
+    if (IN_CLAUDE) {
+      return window.claude.use('downloads').then(function (dl) {
+        if (!dl) throw { code: 'unavailable' };
+        return dl.save({ filename: name, data: text });
+      });
+    }
+    var blob = new Blob([text], { type: mime });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    return Promise.resolve();
+  }
+  function exportIcs() {
+    var list = allUpcoming().filter(function (x) { return daysUntil(evDay(x.e)) >= 0; });
+    if (!list.length) { toast('書き出せる予定がありません'); return; }
+    saveFile('shukatsu-yotei-' + ymdCompact(new Date()) + '.ics', buildIcs(list), 'text/calendar')
+      .then(function () { toast('カレンダー用のファイルを書き出しました(' + list.length + '件)'); })
+      .catch(function () { toast('書き出せませんでした'); });
+  }
+
+  /* ---------- 画面: 今週 ---------- */
+  function wkEvHtml(x, lead) {
+    return '<li class="wk"><button type="button" class="wk-main" data-id="' + esc(x.c.id) + '">' +
+      '<span class="wk-t mono">' + esc(lead) + '</span>' +
+      '<span class="wk-b"><b>' + esc(x.c.name) + '</b><span>' + esc(evTitle(x.e)) + '</span></span></button>' +
+      '<button type="button" class="mini" data-done="' + esc(x.c.id) + '|' + esc(x.e.id) + '" aria-label="' + esc(x.c.name + ' ' + evTitle(x.e)) + 'を' + doneLabel(x.e) + 'にする">' + doneLabel(x.e) + '</button></li>';
+  }
+  function dayGroup(title, mono, list, cls, leadFn) {
+    return '<section class="day"><h3 class="day-h ' + (cls || '') + '">' + esc(title) + (mono ? ' <span class="mono">' + esc(mono) + '</span>' : '') + '</h3>' +
+      '<ul class="list">' + list.map(function (x) { return wkEvHtml(x, leadFn(x)); }).join('') + '</ul></section>';
+  }
+  function renderWeek() {
+    var box = $('weekBody');
+    var ups = allUpcoming();
+    var over = ups.filter(function (x) { return daysUntil(evDay(x.e)) < 0; });
+    var soon = ups.filter(function (x) { var n = daysUntil(evDay(x.e)); return n >= 0 && n <= 6; });
+    var later = ups.filter(function (x) { return daysUntil(evDay(x.e)) > 6; }).slice(0, 5);
+    var todo = items.filter(function (c) { return c.status !== 'out' && c.next; });
+    var active = items.filter(function (i) { return ACTIVE.indexOf(i.status) >= 0; }).length;
+    $('weekSummary').innerHTML = loaded && items.length
+      ? '<span>今週の予定<b>' + soon.length + '</b>件</span>' +
+        '<span>期限超過<b' + (over.length ? ' class="over"' : '') + '>' + over.length + '</b></span>' +
+        '<span>選考中<b>' + active + '</b>社</span>'
+      : '';
+    $('icsBtn').hidden = IN_CLAUDE || !ups.length;
+
+    if (!loaded) { box.innerHTML = '<p class="empty"><b>読み込み中</b>今週の予定がここに並びます。</p>'; return; }
+    if (!items.length) {
+      box.innerHTML = '<p class="empty"><b>まだ企業がありません</b>企業を登録して、説明会や締切の日付を入れると、今週やることがここに並びます。<br><button type="button" class="btn primary" data-act="newapp">最初の1社を追加</button></p>';
+      return;
+    }
+    var html = '';
+    if (over.length) html += dayGroup('期限超過', '終わったら「完了」を押してください', over, 'over', function (x) { return fmtMD(x.e.date); });
+    var byDay = {};
+    soon.forEach(function (x) { (byDay[evDay(x.e)] = byDay[evDay(x.e)] || []).push(x); });
+    Object.keys(byDay).sort().forEach(function (d) {
+      var n = daysUntil(d);
+      html += dayGroup(n === 0 ? '今日' : n === 1 ? '明日' : fmtDate(d), n <= 1 ? fmtDate(d) : '', byDay[d], '',
+        function (x) { return x.e.endDate ? '〜' + fmtMD(x.e.endDate) : (x.e.time || '終日'); });
+    });
+    if (later.length) html += dayGroup('それ以降', '', later, '', function (x) { return fmtMD(x.e.date); });
+    if (!over.length && !soon.length && !later.length) {
+      html += '<p class="empty"><b>今週の予定はありません</b>企業の「予定」タブに、説明会・面接・締切を日付つきで入れると並びます。</p>';
+    }
+    var pend = pendingResults();
+    if (pend.length) {
+      html += '<section class="day"><h3 class="day-h">結果待ち <span class="mono">結果が出たら予定を開いて入力</span></h3><ul class="list">' + pend.map(function (x) {
+        return '<li class="wk"><button type="button" class="wk-main" data-id="' + esc(x.c.id) + '"><span class="wk-t mono">' + esc(fmtMD(x.e.date)) + '</span>' +
+          '<span class="wk-b"><b>' + esc(x.c.name) + '</b><span>' + esc(evTitle(x.e)) + '</span></span></button></li>';
+      }).join('') + '</ul></section>';
+    }
+    if (todo.length) {
+      html += '<section class="day"><h3 class="day-h">次にやること</h3><ul class="list">' + todo.map(function (c) {
+        return '<li class="wk"><button type="button" class="wk-main" data-id="' + esc(c.id) + '"><span class="wk-t mono">▸</span>' +
+          '<span class="wk-b"><b>' + esc(c.name) + '</b><span>' + esc(c.next) + '</span></span></button>' +
+          '<button type="button" class="mini" data-todo="' + esc(c.id) + '" aria-label="' + esc(c.name) + 'の「' + esc(c.next) + '」を完了にする">完了</button></li>';
+      }).join('') + '</ul></section>';
+    }
+    box.innerHTML = html;
+  }
+
+  /* ---------- 画面: 企業(一覧) ---------- */
+  var FLAGS = [['soon', '今週の予定あり'], ['pend', '結果待ち'], ['prep', '準備が途中']];
+  function renderChips(base, flagFn) {
+    var counts = {}, fc = {};
+    base.forEach(function (i) {
+      counts[i.status] = (counts[i.status] || 0) + 1;
+      FLAGS.forEach(function (f) { if (flagFn[f[0]](i)) fc[f[0]] = (fc[f[0]] || 0) + 1; });
+    });
+    var html = '<button type="button" class="fchip" data-st="all" aria-pressed="' + (filterStatus === 'all') + '">すべて <span class="mono">' + base.length + '</span></button>';
+    STATUS.forEach(function (s) {
+      html += '<button type="button" class="fchip" data-st="' + s.key + '" aria-pressed="' + (filterStatus === s.key) + '">' +
+        esc(s.key === 'offer' ? offerLabel() : s.label) + ' <span class="mono">' + (counts[s.key] || 0) + '</span></button>';
+    });
+    html += '<span class="vsep" aria-hidden="true"></span>';
+    FLAGS.forEach(function (f) {
+      html += '<button type="button" class="fchip" data-flag="' + f[0] + '" aria-pressed="' + (!!cFlags[f[0]]) + '">' + f[1] + ' <span class="mono">' + (fc[f[0]] || 0) + '</span></button>';
+    });
+    $('chips').innerHTML = html;
+  }
+  function nz(s) { return String(s == null ? '' : s).normalize('NFKC').toLowerCase(); }
+  function fieldsOf(it) {
+    return [
+      ['企業名', it.name], ['職種', it.role], ['次にやること', it.next], ['クチコミ', it.review], ['所感', it.impression], ['迷いメモ', [it.pros, it.cons, it.decide].join(' ')], ['メモ', it.note],
+      ['予定', it.events.map(function (e) { return evTitle(e) + ' ' + e.log; }).join(' ')],
+      ['準備', it.checks.map(function (c) { return c.label; }).join(' ')],
+      ['ES', it.subs.map(function (x) { return x.label + ' ' + x.body; }).join(' ')]
+    ].map(function (f) { return [f[0], nz(f[1])]; });
+  }
+  /* 一致しなければ null、一致すれば最初の語が見つかった項目名('' は検索語なし) */
+  function matchHit(it, toks) {
+    if (!toks.length) return '';
+    var fs = fieldsOf(it), hit = '';
+    for (var t = 0; t < toks.length; t++) {
+      var found = '';
+      for (var i = 0; i < fs.length; i++) if (fs[i][1].indexOf(toks[t]) >= 0) { found = fs[i][0]; break; }
+      if (!found) return null;
+      if (t === 0) hit = found;
+    }
+    return hit;
+  }
+  function sorterFor() {
+    if (cSort === 'fit') return function (a, b) {
+      var ao = a.status === 'out', bo = b.status === 'out';
+      if (ao !== bo) return ao ? 1 : -1;
+      var fa = fitScore(a), fb = fitScore(b);
+      if ((fa === null) !== (fb === null)) return fa === null ? 1 : -1;
+      if (fa !== fb) return fb - fa;
+      return sortItems(a, b);
+    };
+    if (cSort === 'updated') return function (a, b) { return (b.updatedAt || 0) - (a.updatedAt || 0); };
+    if (cSort === 'name') return function (a, b) { return String(a.name).localeCompare(String(b.name), 'ja'); };
+    return sortItems;
+  }
+  function rowHtml(it, hit, grouped) {
+    var st = stOf(it.status);
+    var ne = nextEvent(it);
+    var evLine = '';
+    if (ne && it.status !== 'out') {
+      var n = daysUntil(evDay(ne));
+      evLine = '<span class="r-next"><span class="r-next-t">' + esc(evTitle(ne)) + ' <span class="mono">' + fmtDate(ne.date) + (ne.endDate ? '〜' + fmtDate(ne.endDate) : (ne.time ? ' ' + esc(ne.time) : '')) + '</span></span>' +
+        '<span class="due ' + dueClass(n) + '">' + (isOngoing(ne) ? '開催中' : dueText(n)) + '</span></span>';
+    }
+    var sub = [];
+    if (it.role && !grouped) sub.push(esc(it.role));
+    if (it.checks.length) sub.push('準備 ' + it.checks.filter(function (c) { return c.done; }).length + '/' + it.checks.length);
+    var segs = '';
+    for (var k = 1; k <= 5; k++) segs += '<i' + (st.key !== 'out' && st.step >= k ? ' class="on"' : '') + '></i>';
+    return '<li><button type="button" class="row' + (grouped ? ' grp-r' : '') + '" data-id="' + esc(it.id) + '" style="--bar:' + st.bar + '">' +
+      '<span class="r-top"><span class="r-name">' + esc(grouped ? (it.role || 'コース未入力') : it.name) + '</span>' +
+      '<span class="r-kind">' + esc(KIND[it.kind] || '') + '</span>' +
+      '<span class="chip t-' + st.tone + '">' + esc(statusLabel(st.key, it.kind)) + '</span></span>' +
+      (sub.length ? '<span class="r-role">' + sub.join(' ・ ') + '</span>' : '') +
+      evLine +
+      ((hit && hit !== '企業名' && hit !== '職種') ? '<span class="r-hit">一致: ' + esc(hit) + '</span>' : '') +
+      (it.next ? '<span class="r-todo">▸ ' + esc(it.next) + '</span>' : '') +
+      ((it.impression || it.review || it.note) ? '<span class="r-note">' + esc(it.impression || it.review || it.note) + '</span>' : '') +
+      '<span class="bar" aria-hidden="true">' + segs + '</span>' +
+      '</button></li>';
+  }
+  function renderList() {
+    var toks = nz(cQuery).split(/\s+/).filter(Boolean), hits = {};
+    var base = items.filter(function (i) {
+      if (filterKind !== 'all' && i.kind !== filterKind) return false;
+      var h = matchHit(i, toks);
+      if (h === null) return false;
+      hits[i.id] = h;
+      return true;
+    });
+    var soon = {}, pend = {};
+    allUpcoming().forEach(function (x) { var n = daysUntil(evDay(x.e)); if (n >= 0 && n <= 6) soon[x.c.id] = 1; });
+    pendingResults().forEach(function (x) { pend[x.c.id] = 1; });
+    var flagFn = {
+      soon: function (c) { return !!soon[c.id]; },
+      pend: function (c) { return !!pend[c.id]; },
+      prep: function (c) { return c.status !== 'out' && c.checks.some(function (k) { return !k.done; }); }
+    };
+    renderChips(base, flagFn);
+    var list = $('list'), cnt = $('cCount');
+    if (!loaded) { cnt.hidden = true; list.innerHTML = '<li class="empty"><b>読み込み中</b>登録した企業がここに並びます。</li>'; return; }
+    if (!items.length) {
+      cnt.hidden = true;
+      list.innerHTML = '<li class="empty"><b>まだ企業がありません</b>応募したい会社を登録すると、状況をここで一覧できます。<br><button type="button" class="btn primary" data-act="newapp">最初の1社を追加</button></li>';
+      return;
+    }
+    var vis = base.filter(function (i) { return filterStatus === 'all' || i.status === filterStatus; })
+      .filter(function (i) { return Object.keys(cFlags).every(function (k) { return flagFn[k](i); }); })
+      .sort(sorterFor());
+    var active = toks.length || filterKind !== 'all' || filterStatus !== 'all' || Object.keys(cFlags).length;
+    cnt.hidden = !active;
+    $('cCountT').textContent = vis.length + '社を表示(全' + items.length + '社)';
+    var groups = [], gi = {};
+    vis.forEach(function (c) {
+      var k = nz(c.name).replace(/\s+/g, '');
+      if (gi[k] == null) { gi[k] = groups.length; groups.push([]); }
+      groups[gi[k]].push(c);
+    });
+    var rowsHtml = groups.map(function (g) {
+      if (g.length < 2) return rowHtml(g[0], hits[g[0].id], false);
+      return '<li class="grp-h"><span>' + esc(g[0].name) + ' <span class="mono">' + g.length + 'コース</span></span>' +
+        '<button type="button" class="mini" data-grpcmp="' + g.map(function (c) { return c.id; }).join(',') + '">比べる</button></li>' +
+        g.map(function (c) { return rowHtml(c, hits[c.id], true); }).join('');
+    }).join('');
+    list.innerHTML = vis.length ? rowsHtml
+      : '<li class="empty"><b>該当する企業はありません</b>条件を変えるか、「条件をクリア」を押してください。</li>';
+  }
+  function clearFilters() {
+    cQuery = ''; $('cSearch').value = ''; filterKind = 'all'; filterStatus = 'all'; cFlags = {};
+    render();
+  }
+
+  /* ---------- 画面: 企業(志望度の比較) ---------- */
+  function axBars(sc) {
+    return axes.map(function (a) {
+      var v = sc[a.id] | 0, d = '';
+      for (var i = 1; i <= 5; i++) d += '<i' + (i <= v ? ' class="on"' : '') + '></i>';
+      return '<span class="ax"><span class="ax-n">' + esc(a.name) + (v ? ' ' + v : '') + '</span><span class="ax-d" aria-hidden="true">' + d + '</span></span>';
+    }).join('');
+  }
+  function pickBtn(id) {
+    var on = cmpSel.indexOf(id) >= 0;
+    return '<button type="button" class="mini cmp-pick" data-pick="' + esc(id) + '" aria-pressed="' + on + '">' + (on ? '比較中' : '比べる') + '</button>';
+  }
+  function cmpTable() {
+    var sel = cmpSel.map(function (id) { return items.filter(function (c) { return c.id === id; })[0]; });
+    if (!sel.length) return '';
+    var same = sel.length > 1 && sel.every(function (c) { return nz(c.name) === nz(sel[0].name); });
+    var head = '<div class="cmp-top"><p class="hint">' + (sel.length < 2 ? 'あと1件選ぶと、横並びで比べられます。' : '比較中: ' + (same ? esc(sel[0].name) + 'の' : '') + sel.length + (same ? 'コース' : '件')) + '</p>' +
+      '<button type="button" class="btn sm" data-cmpclear>選択をクリア</button></div>';
+    if (sel.length < 2) return head;
+    function best(vals) { var m = Math.max.apply(null, vals.map(function (v) { return v === null ? -1 : v; })); return m > 0 ? m : -1; }
+    function trow(label, cells, vals) {
+      var m = vals ? best(vals) : -1;
+      var ties = vals ? vals.filter(function (v) { return v === m; }).length : 0;
+      return '<tr><th scope="row">' + esc(label) + '</th>' + cells.map(function (x, i) {
+        return '<td' + (vals && m > 0 && vals[i] === m && ties < sel.length ? ' class="best"' : '') + '>' + x + '</td>';
+      }).join('') + '</tr>';
+    }
+    function text(v) { v = String(v || '').trim(); return v ? '<div class="cmpt-text">' + esc(v.length > 400 ? v.slice(0, 400) + '…' : v) + '</div>' : '—'; }
+    var th = '<tr><th scope="col"></th>' + sel.map(function (c) {
+      var prim = same ? (c.role || 'コース未入力') : c.name, sec = same ? '' : c.role;
+      return '<th scope="col"><button type="button" class="cmpt-h" data-id="' + esc(c.id) + '"><b>' + esc(prim) + '</b>' + (sec ? '<span>' + esc(sec) + '</span>' : '') + '</button>' +
+        '<button type="button" class="cmpt-x" data-pick="' + esc(c.id) + '">外す</button></th>';
+    }).join('') + '</tr>';
+    var scores = sel.map(function (c) { return fitScore(c); });
+    var body = trow('状況', sel.map(function (c) { var st = stOf(c.status); return '<span class="chip t-' + st.tone + '">' + esc(statusLabel(st.key, c.kind)) + '</span>'; })) +
+      trow('総合点', scores.map(function (v) { return v === null ? '—' : v.toFixed(1) + ' / 5'; }), scores);
+    axes.forEach(function (a) {
+      var vals = sel.map(function (c) { return c.scores[a.id] | 0; });
+      body += trow(a.name, vals.map(function (v) { return v ? v + ' / 5' : '—'; }), vals);
+    });
+    body += trow('次の予定', sel.map(function (c) {
+      var ne = nextEvent(c);
+      return ne ? esc(evTitle(ne)) + '<br><span class="mono">' + esc(fmtDate(ne.date) + (ne.endDate ? '〜' + fmtDate(ne.endDate) : '')) + '</span>' : '—';
+    })) +
+      trow('準備', sel.map(function (c) { return c.checks.length ? c.checks.filter(function (k) { return k.done; }).length + '/' + c.checks.length : '—'; })) +
+      trow('良い点', sel.map(function (c) { return text(c.pros); })) +
+      trow('気になる点', sel.map(function (c) { return text(c.cons); })) +
+      trow('決め手', sel.map(function (c) { return text(c.decide); })) +
+      trow('クチコミ', sel.map(function (c) { return text(c.review); })) +
+      trow('所感', sel.map(function (c) { return text(c.impression); })) +
+      trow('メモ', sel.map(function (c) { return text(c.note); }));
+    return head + '<div class="cmpt-wrap" id="cmpTable"><table class="cmpt" style="min-width:' + (92 + sel.length * 170) + 'px"><thead>' + th + '</thead><tbody>' + body + '</tbody></table></div>';
+  }
+  function renderCompare() {
+    var box = $('cmpBody');
+    if (!loaded) { box.innerHTML = '<p class="empty"><b>読み込み中</b></p>'; return; }
+    cmpSel = cmpSel.filter(function (id) { return items.some(function (c) { return c.id === id; }); });
+    var live = items.filter(function (c) { return c.status !== 'out'; });
+    var rated = live.filter(function (c) { return fitScore(c) !== null; }).sort(function (a, b) { return fitScore(b) - fitScore(a); });
+    var unrated = live.filter(function (c) { return fitScore(c) === null; });
+    var html = cmpTable();
+    if (!rated.length) {
+      html += '<p class="empty"><b>まだ評価した企業がありません</b>企業を開いて「志望度」タブで軸ごとに1〜5をつけると、ここで比べられます。</p>';
+    } else {
+      html += '<ul class="list">' + rated.map(function (c, i) {
+        var st = stOf(c.status);
+        return '<li class="cmpw"><button type="button" class="cmp" data-id="' + esc(c.id) + '">' +
+          '<span class="cmp-h"><span class="cmp-rank mono">' + (i + 1) + '</span><span class="r-name">' + esc(c.name) + (c.role ? ' <span class="r-role">' + esc(c.role) + '</span>' : '') + '</span>' +
+          '<span class="chip t-' + st.tone + '">' + esc(statusLabel(st.key, c.kind)) + '</span>' +
+          '<span class="cmp-score mono">' + fitScore(c).toFixed(1) + '</span></span>' +
+          '<span class="cmp-bars">' + axBars(c.scores) + '</span></button>' + pickBtn(c.id) + '</li>';
+      }).join('') + '</ul>';
+    }
+    if (unrated.length) html += unratedHtml(unrated);
+    box.innerHTML = html;
+  }
+  function unratedHtml(list) {
+    return '<h3 class="cmp-sub">未評価(' + list.length + '件)</h3><ul class="list">' + list.map(function (c) {
+      return '<li class="cmpw"><button type="button" class="row" data-id="' + esc(c.id) + '"><span class="r-name">' + esc(c.name) + (c.role ? ' <span class="r-role">' + esc(c.role) + '</span>' : '') + '</span></button>' + pickBtn(c.id) + '</li>';
+    }).join('') + '</ul>';
+  }
+  function togglePick(id) {
+    var k = cmpSel.indexOf(id);
+    if (k >= 0) cmpSel.splice(k, 1);
+    else if (cmpSel.length >= 4) { toast('比べられるのは4件までです'); return; }
+    else cmpSel.push(id);
+    renderCompare();
+    var t = $('cmpTable');
+    if (k < 0 && cmpSel.length >= 2 && t && t.scrollIntoView) t.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* ---------- 画面: ストック ---------- */
+  function tplRowHtml(t, used) {
+    var n = countChars(t.body);
+    var over = t.limit && n > t.limit;
+    var count = n + '字' + (t.limit ? ' / ' + t.limit + '字' : '');
+    var u = used[t.id];
+    return '<li><div class="trow">' +
+      '<button type="button" class="row" data-tid="' + esc(t.id) + '">' +
+      '<span class="r-top"><span class="r-name">' + esc(t.title) + '</span><span class="chip t-n">' + esc(t.cat) + '</span></span>' +
+      '<span class="t-count mono' + (over ? ' over' : '') + '">' + count + (over ? '(' + (n - t.limit) + '字オーバー)' : '') + '</span>' +
+      (t.body ? '<span class="t-prev">' + esc(t.body) + '</span>' : '') +
+      (u && u.length ? '<span class="t-used">使用: ' + esc(u.join('、')) + '</span>' : '') +
+      '</button>' +
+      '<button type="button" class="mini" data-copy="' + esc(t.id) + '" aria-label="' + esc(t.title) + 'の本文をコピー">コピー</button>' +
+      '</div></li>';
+  }
+  function renderTpl() {
+    var counts = {};
+    templates.forEach(function (t) { counts[t.cat] = (counts[t.cat] || 0) + 1; });
+    var html = '<button type="button" class="fchip" data-cat="all" aria-pressed="' + (filterCat === 'all') + '">すべて <span class="mono">' + templates.length + '</span></button>';
+    CATS.forEach(function (c) {
+      html += '<button type="button" class="fchip" data-cat="' + esc(c) + '" aria-pressed="' + (filterCat === c) + '">' + esc(c) + ' <span class="mono">' + (counts[c] || 0) + '</span></button>';
+    });
+    $('catChips').innerHTML = html;
+    var used = {};
+    items.forEach(function (c) {
+      c.subs.forEach(function (s) {
+        if (!s.tid) return;
+        used[s.tid] = used[s.tid] || [];
+        if (used[s.tid].indexOf(c.name) < 0) used[s.tid].push(c.name);
+      });
+    });
+    var list = $('tplList');
+    if (!loaded) { list.innerHTML = '<li class="empty"><b>読み込み中</b>保存したテンプレがここに並びます。</li>'; return; }
+    if (!templates.length) {
+      list.innerHTML = '<li class="empty"><b>まだテンプレがありません</b>自己PR・志望動機・ガクチカの元の文章や、使えるエピソードの素材を文字数つきで残せます。<br><button type="button" class="btn primary" data-act="newtpl">最初のテンプレを作る</button></li>';
+      return;
+    }
+    var tq = nz(tText).split(/\s+/).filter(Boolean);
+    var vis = templates.filter(function (t) { return filterCat === 'all' || t.cat === filterCat; })
+      .filter(function (t) { var h = nz(t.title + ' ' + t.body); return tq.every(function (w) { return h.indexOf(w) >= 0; }); })
+      .sort(function (a, b) { return (b.updatedAt || 0) - (a.updatedAt || 0); });
+    list.innerHTML = vis.length ? vis.map(function (t) { return tplRowHtml(t, used); }).join('') : '<li class="empty"><b>該当するテンプレはありません</b>検索語や種類を変えてみてください。</li>';
+  }
+
+  function qRowHtml(q) {
+    var cn = companyName(q.cid);
+    return '<li><div class="trow">' +
+      '<button type="button" class="row" data-qid="' + esc(q.id) + '">' +
+      '<span class="r-top"><span class="r-name">' + esc(q.q) + '</span><span class="chip t-n">' + esc(q.cat) + '</span></span>' +
+      (cn ? '<span class="r-role">' + (q.cat === '逆質問' ? '聞く企業: ' : '聞かれた企業: ') + esc(cn) + '</span>' : '') +
+      (q.a ? '<span class="t-prev">' + esc(q.a) + '</span>' : '<span class="r-role">答えはまだ入っていません</span>') +
+      '</button>' +
+      '<button type="button" class="mini" data-qcopy="' + esc(q.id) + '" aria-label="この質問の答えをコピー">コピー</button>' +
+      '</div></li>';
+  }
+  function renderQ() {
+    var counts = {};
+    questions.forEach(function (q) { counts[q.cat] = (counts[q.cat] || 0) + 1; });
+    var html = '<button type="button" class="fchip" data-qc="all" aria-pressed="' + (qCat === 'all') + '">すべて <span class="mono">' + questions.length + '</span></button>';
+    QCATS.forEach(function (c) {
+      html += '<button type="button" class="fchip" data-qc="' + esc(c) + '" aria-pressed="' + (qCat === c) + '">' + esc(c) + ' <span class="mono">' + (counts[c] || 0) + '</span></button>';
+    });
+    $('qChips').innerHTML = html;
+    var list = $('qList');
+    if (!loaded) { list.innerHTML = '<li class="empty"><b>読み込み中</b>保存した質問がここに並びます。</li>'; return; }
+    if (!questions.length) {
+      list.innerHTML = '<li class="empty"><b>まだ質問がありません</b>面接で聞かれたことと自分の答えを残すと、次の面接前に見返せます。<br><button type="button" class="btn primary" data-act="newq">最初の質問を追加</button></li>';
+      return;
+    }
+    var t = qText.trim().toLowerCase();
+    var vis = questions.filter(function (q) {
+      if (qCat !== 'all' && q.cat !== qCat) return false;
+      if (!t) return true;
+      return (q.q + ' ' + q.a + ' ' + companyName(q.cid)).toLowerCase().indexOf(t) >= 0;
+    }).sort(function (a, b) { return (b.updatedAt || 0) - (a.updatedAt || 0); });
+    list.innerHTML = vis.length ? vis.map(qRowHtml).join('') : '<li class="empty"><b>該当する質問はありません</b>検索語や種類を変えてみてください。</li>';
+  }
+
+  /* ---------- 通過率 ---------- */
+  function pendingResults() {
+    var out = [];
+    items.forEach(function (c) {
+      if (c.status === 'out') return;
+      c.events.forEach(function (e) { if (e.done && !e.result && e.date && RES_TYPES.indexOf(e.type) >= 0) out.push({ c: c, e: e }); });
+    });
+    return out.sort(function (a, b) { return a.e.date < b.e.date ? -1 : a.e.date > b.e.date ? 1 : 0; });
+  }
+  function reachedOf(c) {
+    var r = { es: false, test: false, interview: false, offer: false }, st = stOf(c.status).step;
+    if (c.status !== 'out') { r.es = st >= 2; r.test = st >= 3; r.interview = st >= 4; r.offer = st >= 5; }
+    c.events.forEach(function (e) {
+      if (!(e.done || e.result)) return;
+      if (e.type === 'deadline') r.es = true;
+      if (e.type === 'test') r.test = true;
+      if (e.type === 'interview') r.interview = true;
+    });
+    if (r.test || r.interview || r.offer) r.es = true;
+    return r;
+  }
+  function renderFunnel() {
+    var box = $('fnBody');
+    if (!loaded) { box.innerHTML = '<p class="empty"><b>読み込み中</b></p>'; return; }
+    var tot = { es: 0, test: 0, interview: 0, offer: 0 }, pass = 0, fail = 0, wait = 0;
+    items.forEach(function (c) {
+      var r = reachedOf(c);
+      Object.keys(tot).forEach(function (k) { if (r[k]) tot[k]++; });
+      c.events.forEach(function (e) {
+        if (RES_TYPES.indexOf(e.type) < 0) return;
+        if (e.result === 'pass') pass++; else if (e.result === 'fail') fail++; else if (e.done && c.status !== 'out') wait++;
+      });
+    });
+    if (!tot.es) {
+      box.innerHTML = '<p class="empty"><b>まだ集計できません</b>企業の状況を「ES提出済み」以降にするか、予定(ES・書類締切、適性検査、面接)を完了にすると、ここに通過率が出ます。</p>';
+      return;
+    }
+    var rows = [['es', 'ES提出'], ['test', '適性検査'], ['interview', '面接'], ['offer', '内定・参加決定']];
+    var html = '<div class="fn">' + rows.map(function (x) {
+      var n = tot[x[0]], pct = Math.round(n / tot.es * 100);
+      return '<div class="fn-row"><div class="fn-h"><b>' + x[1] + '</b><span class="mono">' + n + '社' + (x[0] !== 'es' ? '(' + pct + '%)' : '') + '</span></div>' +
+        '<div class="fn-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div></div>';
+    }).join('') +
+      '<p class="fn-sum">ES提出 ' + tot.es + '社のうち、面接に進んだのは ' + tot.interview + '社(' + Math.round(tot.interview / tot.es * 100) + '%)です。</p>' +
+      '<div class="fn-res"><span>通過<b>' + pass + '</b></span><span>不合格<b>' + fail + '</b></span><span>結果待ち<b>' + wait + '</b></span></div>' +
+      '<p class="hint">現在の状況と、完了にした予定から数えています。「見送り」にした企業も、途中まで進んだ分は数えます。</p></div>';
+    box.innerHTML = html;
+  }
+
+  /* ---------- 労いの言葉 ---------- */
+  var cheered = false;
+  function cheerLines() {
+    var h = new Date().getHours(), out = [];
+    out.push(h < 5 ? '夜遅くまでおつかれさまです。今日はそろそろ休みましょう。' :
+      h < 10 ? 'おはようございます。今日も無理のないペースでいきましょう。' :
+      h < 17 ? 'おつかれさまです。ひと息つきながら進めましょう。' :
+      h < 22 ? '今日もおつかれさまでした。ここまでよくがんばっています。' : '遅い時間までおつかれさまです。そろそろ体を休めましょう。');
+    if (loaded && items.length) {
+      var ups = allUpcoming();
+      var over = ups.filter(function (x) { return daysUntil(evDay(x.e)) < 0; }).length;
+      var wk = ups.filter(function (x) { var n = daysUntil(evDay(x.e)); return n >= 0 && n <= 6; }).length;
+      var offs = items.filter(function (c) { return c.status === 'offer'; });
+      if (offs.length) out.push(offs.some(function (c) { return c.kind === 'main'; }) ? '内定おめでとうございます。' : '参加決定おめでとうございます。');
+      else if (over) out.push('過ぎた予定が' + over + '件あります。落ち着いて、できるものから片づけましょう。');
+      else if (wk) out.push('今週の予定は' + wk + '件。ひとつずつ進めれば大丈夫です。');
+      else out.push('今週は余裕があります。休むのも大事な準備です。');
+    }
+    return out;
+  }
+  function startCheer() {
+    if (cheered) return;
+    cheered = true;
+    var el = $('cheer'), tx = $('cheerText');
+    function hide() { el.hidden = true; }
+    tx.textContent = cheerLines().join('　　・　　');
+    el.hidden = false;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { setTimeout(hide, 9000); return; }
+    tx.style.animationDuration = Math.max(16, Math.round(tx.textContent.length * 0.55)) + 's';
+    tx.addEventListener('animationend', hide);
+  }
+
+  /* ---------- 頻出フレーズ(辞書を使わず、くり返し出る文字列を数える) ---------- */
+  var SPLIT_RE = /[。、，．,.！!？?\s「」『』（）()【】［］\[\]・:：;；\/…]+/;
+  var KEEP = '\\u4E00-\\u9FFF\\u3005\\u30A1-\\u30FA';
+  var START_OK = new RegExp('^[' + KEEP + 'A-Za-z0-9]');
+  var END_OK = new RegExp('[' + KEEP + 'A-Za-z0-9しだたるすいくんう]$');
+  var CONTENT2 = new RegExp('[' + KEEP + ']', 'g');
+  function guessCat(s) {
+    if (s.tid) { var t = templates.filter(function (x) { return x.id === s.tid; })[0]; if (t) return t.cat; }
+    var l = s.label || '';
+    if (/自己\s*PR|PR/i.test(l)) return '自己PR';
+    if (/志望|志願/.test(l)) return '志望動機';
+    if (/ガクチカ|力を入れ/.test(l)) return 'ガクチカ';
+    if (/強み|弱み|長所|短所/.test(l)) return '強み・弱み';
+    return 'その他';
+  }
+  function phraseDocs() {
+    var docs = [], seen = Object.create(null);
+    function add(title, cat, text) {
+      var k = String(text || '').replace(/\s+/g, '');
+      if (!k || seen[k]) return;
+      seen[k] = 1; docs.push({ title: title, cat: cat, text: String(text) });
+    }
+    templates.forEach(function (t) { add('テンプレ「' + t.title + '」', t.cat, t.body); });
+    items.forEach(function (c) { c.subs.forEach(function (s) { add(c.name + '「' + (s.label || 'ES') + '」', guessCat(s), s.body); }); });
+    return docs;
+  }
+  function topPhrases(docs) {
+    var cnt = Object.create(null), who = Object.create(null), budget = 200000;
+    docs.forEach(function (d, di) {
+      d.text.split(SPLIT_RE).forEach(function (seg) {
+        if (seg.length < 3 || budget <= 0) return;
+        budget -= seg.length;
+        for (var n = 3; n <= 10 && n <= seg.length; n++) {
+          for (var i = 0; i + n <= seg.length; i++) {
+            if (!START_OK.test(seg.charAt(i))) continue;
+            var g = seg.substr(i, n);
+            if (!END_OK.test(g)) continue;
+            cnt[g] = (cnt[g] || 0) + 1;
+            var w = who[g] || (who[g] = []);
+            if (w[w.length - 1] !== di) w.push(di);
+          }
+        }
+      });
+    });
+    var cand = Object.keys(cnt).filter(function (g) {
+      return cnt[g] >= 2 && (g.match(CONTENT2) || []).length >= 2;
+    }).sort(function (a, b) { return b.length - a.length; });
+    var kept = Object.create(null), out = [];
+    cand.forEach(function (g) {
+      var arr = kept[cnt[g]] || (kept[cnt[g]] = []);
+      if (arr.some(function (k) { return k.indexOf(g) >= 0; })) return;
+      arr.push(g);
+      out.push({ g: g, n: cnt[g], who: who[g] });
+    });
+    out.sort(function (a, b) { return b.n - a.n || b.g.length - a.g.length; });
+    return out.slice(0, 30);
+  }
+  function renderPh() {
+    var docs = phraseDocs(), counts = {};
+    docs.forEach(function (d) { counts[d.cat] = (counts[d.cat] || 0) + 1; });
+    var html = '<button type="button" class="fchip" data-pc="all" aria-pressed="' + (phCat === 'all') + '">すべて <span class="mono">' + docs.length + '</span></button>';
+    CATS.forEach(function (c) {
+      html += '<button type="button" class="fchip" data-pc="' + esc(c) + '" aria-pressed="' + (phCat === c) + '">' + esc(c) + ' <span class="mono">' + (counts[c] || 0) + '</span></button>';
+    });
+    $('phChips').innerHTML = html;
+    var box = $('phList');
+    if (!loaded) { box.innerHTML = '<li class="empty"><b>読み込み中</b></li>'; return; }
+    var use = docs.filter(function (d) { return phCat === 'all' || d.cat === phCat; });
+    if (!use.length) {
+      box.innerHTML = '<li class="empty"><b>文章がまだありません</b>ESテンプレや提出したESを入れると、よく使う言い回しをここに集計します。</li>';
+      return;
+    }
+    var list = topPhrases(use);
+    if (!list.length) {
+      box.innerHTML = '<li class="empty"><b>くり返し出る言い回しはまだありません</b>文章が増えると見つかります。</li>';
+      return;
+    }
+    var max = list[0].n;
+    box.innerHTML = list.map(function (x) {
+      var names = x.who.slice(0, 3).map(function (i) { return use[i].title; }).join(' / ');
+      if (x.who.length > 3) names += ' ほか' + (x.who.length - 3) + '件';
+      return '<li><div class="ph"><div class="ph-top"><span class="ph-w">' + esc(x.g) + '</span><span class="ph-n mono">' + x.n + '回 · ' + x.who.length + '件</span></div>' +
+        '<div class="ph-bar" aria-hidden="true"><i style="width:' + Math.round(x.n / max * 100) + '%"></i></div>' +
+        '<div class="ph-src">' + esc(names) + '</div></div></li>';
+    }).join('');
+  }
+
+  function render() {
+    var now = new Date();
+    $('today').textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日(' + '日月火水木金土'[now.getDay()] + ')';
+    $('appCount').textContent = loaded ? String(items.length) : '';
+    renderWeek();
+    renderList();
+    renderCompare();
+    renderFunnel();
+    renderTpl();
+    renderQ();
+    if (tab === 'stock' && sv === 'ph') renderPh();
+    if (!$('overlay').hidden) renderRq();
+    var seg = $('kindSeg').querySelectorAll('button');
+    for (var i = 0; i < seg.length; i++) seg[i].setAttribute('aria-pressed', String(seg[i].getAttribute('data-kind') === filterKind));
+  }
+
+  /* ---------- タブ・表示の切り替え ---------- */
+  function saveUi() { try { localStorage.setItem(UI_KEY, JSON.stringify({ tab: tab, av: av, sv: sv })); } catch (e) {} }
+  function loadUi() {
+    try {
+      var u = JSON.parse(localStorage.getItem(UI_KEY) || '{}');
+      if (['week', 'apps', 'stock'].indexOf(u.tab) >= 0) tab = u.tab;
+      if (u.av === 'compare' || u.av === 'funnel') av = u.av;
+      if (u.sv === 'q' || u.sv === 'ph') sv = u.sv;
+    } catch (e) {}
+  }
+  function applyView() {
+    ['week', 'apps', 'stock'].forEach(function (t) {
+      $('panel-' + t).hidden = tab !== t;
+      $('tab-' + t).setAttribute('aria-selected', String(tab === t));
+    });
+    $('av-list').hidden = av !== 'list';
+    $('av-compare').hidden = av !== 'compare';
+    $('av-funnel').hidden = av !== 'funnel';
+    $('sv-tpl').hidden = sv !== 'tpl';
+    $('sv-q').hidden = sv !== 'q';
+    $('sv-ph').hidden = sv !== 'ph';
+    var a = $('avSeg').querySelectorAll('button');
+    for (var i = 0; i < a.length; i++) a[i].setAttribute('aria-pressed', String(a[i].getAttribute('data-av') === av));
+    var s = $('svSeg').querySelectorAll('button');
+    for (var j = 0; j < s.length; j++) s[j].setAttribute('aria-pressed', String(s[j].getAttribute('data-sv') === sv));
+    $('add').hidden = tab === 'stock' && sv === 'ph';
+    $('add').textContent = tab === 'stock' ? (sv === 'tpl' ? '＋ テンプレを追加' : '＋ 質問を追加') : '＋ 企業を追加';
+    if (tab === 'stock' && sv === 'ph') renderPh();
+  }
+
+  /* ---------- 保存先 ---------- */
+  function setSync(text, cls) {
+    var s = $('sync');
+    s.textContent = text;
+    s.className = 'sync' + (cls ? ' ' + cls : '');
+    $('note').hidden = cls === 'ok' || text === '接続中';
+  }
+
+  function dbStore(db, uid) {
+    var base = db.doc('data/users/' + uid + '/profile');
+    var cols = {};
+    KINDS.forEach(function (k) { cols[k] = base.collection(k); });
+    return {
+      mode: 'db',
+      start: function (h) {
+        function fail() { setSync('同期できません', 'bad'); }
+        function map(snap) { return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }); }
+        KINDS.forEach(function (k) {
+          cols[k].onSnapshot(function (s) { h[k](map(s)); if (k === 'companies') setSync('あなた専用・クラウド保存', 'ok'); }, fail);
+        });
+      },
+      save: function (kind, id, obj) { return cols[kind].doc(id).set(obj); },
+      remove: function (kind, id) { return cols[kind].doc(id).delete(); }
+    };
+  }
+
+  function localStore() {
+    var data = { companies: {}, templates: {}, questions: {}, settings: {} };
+    var h = null;
+    try {
+      var raw = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null');
+      if (raw && typeof raw === 'object') KINDS.forEach(function (k) { if (raw[k] && typeof raw[k] === 'object') data[k] = raw[k]; });
+    } catch (e) {}
+    function persist() {
+      try { localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); return true; }
+      catch (e) { setSync('保存できません', 'bad'); toast('この端末に保存できません。プライベートブラウズでないか確認してください。'); return false; }
+    }
+    function list(kind) { return Object.keys(data[kind]).map(function (id) { return Object.assign({ id: id }, data[kind][id]); }); }
+    function emit() { KINDS.forEach(function (k) { h[k](list(k)); }); }
+    return {
+      mode: 'local',
+      start: function (handlers) { h = handlers; emit(); setSync('この端末のみ', ''); },
+      save: function (kind, id, obj) { data[kind][id] = obj; persist(); emit(); return Promise.resolve(); },
+      remove: function (kind, id) { delete data[kind][id]; persist(); emit(); return Promise.resolve(); },
+      exportAll: function () { return JSON.parse(JSON.stringify(data)); },
+      merge: function (p) {
+        KINDS.forEach(function (k) { Object.keys(p[k] || {}).forEach(function (id) { data[k][id] = p[k][id]; }); });
+        persist(); emit();
+      }
+    };
+  }
+
+  function startStore(s) {
+    store = s;
+    $('backupBtn').hidden = store.mode !== 'local';
+    store.start({
+      companies: function (l) { items = l.map(normCompany); loaded = true; render(); startCheer(); },
+      templates: function (l) { templates = l; render(); },
+      questions: function (l) { questions = l.map(normQuestion); render(); },
+      settings: function (l) {
+        var a = l.filter(function (x) { return x.id === 'axes'; })[0];
+        var list = a ? cleanAxes(a.list) : [];
+        axes = list.length ? list : DEFAULT_AXES.slice();
+        render();
+      }
+    });
+  }
+
+  function boot() {
+    var has = window.claude && window.claude.use;
+    var pDb = has ? window.claude.use('db') : Promise.resolve(null);
+    var pUser = has ? window.claude.use('user') : Promise.resolve(null);
+    Promise.all([pDb.catch(function () { return null; }), pUser.catch(function () { return null; })]).then(function (r) {
+      var db = r[0], user = r[1];
+      if (!db || !user) return [db, null, null];
+      return Promise.all([Promise.resolve(user.id()).catch(function () { return null; }),
+                          Promise.resolve(user.can('data.write')).catch(function () { return null; })])
+        .then(function (x) { return [db, x[0], x[1]]; });
+    }).then(function (r) {
+      var db = r[0], uid = r[1], can = r[2];
+      if (db && uid && can !== false) startStore(dbStore(db, uid));
+      else startStore(localStore());
+    });
+  }
+
+  /* 保存。クラウドに書けない共有設定だった場合は、この端末のみの保存に切り替えて続ける。 */
+  function persist(kind, id, obj) {
+    return store.save(kind, id, obj).catch(function (e) {
+      if (store.mode === 'db' && e && e.code === 'invalid_argument') {
+        startStore(localStore());
+        toast('この共有では保存できないため、この端末のみに保存します');
+        return store.save(kind, id, obj);
+      }
+      throw e;
+    });
+  }
+
+  /* ---------- シートの共通処理 ---------- */
+  var SKIN_KEY = 'shukatsu-skin-v1', DEFAULT_SKIN = 'black';
+  var SKINS = [
+    ['black', '黒', '#000000', '#111214', '#7B93FF'],
+    ['dark', 'ダーク(紺)', '#0E121C', '#161B28', '#7B93FF'],
+    ['light', '白', '#F5F6F8', '#FFFFFF', '#2748D9'],
+    ['cream', 'クリーム', '#F6F1E7', '#FFFDF8', '#B4532A'],
+    ['mist', '青みグレー', '#EEF1F6', '#FFFFFF', '#2748D9'],
+    ['auto', '端末に合わせる', null, null, null]
+  ];
+  function curSkin() { return document.documentElement.getAttribute('data-skin') || DEFAULT_SKIN; }
+  function applySkin(k) {
+    document.documentElement.setAttribute('data-skin', k);
+    try { localStorage.setItem(SKIN_KEY, k); } catch (e) {}
+  }
+  function renderSkins() {
+    var cur = curSkin();
+    $('skinList').innerHTML = SKINS.map(function (x) {
+      var sw = x[2]
+        ? '<span class="sw" style="background:' + x[2] + '"><i style="background:' + x[3] + '"></i><b style="background:' + x[4] + '"></b></span>'
+        : '<span class="sw" style="background:linear-gradient(90deg,#EEF1F6 50%,#0E121C 50%)"></span>';
+      return '<button type="button" class="skin" data-skin="' + x[0] + '" aria-pressed="' + (cur === x[0]) + '">' + sw + '<span>' + esc(x[1]) + '</span></button>';
+    }).join('');
+  }
+  var OVERLAYS = ['overlay', 'tOverlay', 'qOverlay', 'aOverlay', 'bOverlay', 'kOverlay'];
+  function syncLock() { document.body.style.overflow = OVERLAYS.some(function (i) { return !$(i).hidden; }) ? 'hidden' : ''; }
+  function openOv(id) { $(id).hidden = false; syncLock(); }
+  function closeOv(id) {
+    $(id).hidden = true; syncLock();
+    if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+  }
+  function done(msg, close) { close(); toast(msg); }
+  function fail(e, what) {
+    toast(e && e.code === 'quota_exceeded' ? '保存できる上限に達しました。使わないデータを削除してください。' : what + 'できませんでした。もう一度お試しください。');
+  }
+  function armDelete(btn, setTimer, getTimer, reset) {
+    if (!btn.classList.contains('armed')) {
+      btn.classList.add('armed'); btn.textContent = 'もう一度押すと削除';
+      setTimer(setTimeout(reset, 4000));
+      return false;
+    }
+    return true;
+  }
+  function optsPress(box, attr, val) {
+    var k = box.querySelectorAll('button');
+    for (var i = 0; i < k.length; i++) k[i].setAttribute('aria-pressed', String(k[i].getAttribute(attr) === val));
+  }
+
+  function buildOpts() {
+    $('f-status').innerHTML = STATUS.map(function (s) {
+      return '<button type="button" class="opt" data-status="' + s.key + '" aria-pressed="false">' + esc(s.label) + '</button>';
+    }).join('');
+    $('t-cat').innerHTML = CATS.map(function (c) {
+      return '<button type="button" class="opt" data-cat="' + esc(c) + '" aria-pressed="false">' + esc(c) + '</button>';
+    }).join('');
+    $('q-cat').innerHTML = QCATS.map(function (c) {
+      return '<button type="button" class="opt" data-cat="' + esc(c) + '" aria-pressed="false">' + esc(c) + '</button>';
+    }).join('');
+  }
+
+  /* ---------- 企業シート ---------- */
+  function resetDel() { clearTimeout(delTimer); var b = $('f-del'); b.textContent = '削除'; b.classList.remove('armed'); }
+  function refreshUrlLink() {
+    var u = $('f-url').value.trim();
+    var ok = u && validUrl(u);
+    $('f-ulink').hidden = !ok;
+    if (ok) $('f-ua').setAttribute('href', u);
+    $('f-uerr').hidden = true;
+  }
+  function setSheetTab(name) {
+    ['basic', 'memo', 'ev', 'chk', 'sub', 'fit'].forEach(function (n) {
+      $('stab-' + n).setAttribute('aria-selected', String(n === name));
+    });
+    var panels = $('form').querySelectorAll('.spanel');
+    for (var i = 0; i < panels.length; i++) panels[i].hidden = panels[i].getAttribute('data-sec') !== name;
+  }
+  function updateSheetCounts() {
+    $('stab-ev').innerHTML = '予定' + (fEvents.length ? '<span class="mono">' + fEvents.length + '</span>' : '');
+    var nd = fChecks.filter(function (c) { return c.done; }).length;
+    $('stab-chk').innerHTML = '準備' + (fChecks.length ? '<span class="mono">' + nd + '/' + fChecks.length + '</span>' : '');
+    $('stab-sub').innerHTML = 'ES' + (fSubs.length ? '<span class="mono">' + fSubs.length + '</span>' : '');
+  }
+
+  function evHtml(e, i) {
+    var id = esc(e.id);
+    var opts = EVTYPES.map(function (t) {
+      return '<option value="' + t.key + '"' + (t.key === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>';
+    }).join('');
+    return '<div class="ev" data-ei="' + i + '">' +
+      '<div class="ev-top">' +
+      '<select id="ev-type-' + id + '" data-f="type" aria-label="予定の種類">' + opts + '</select>' +
+      '<input type="date" id="ev-date-' + id + '" data-f="date" value="' + esc(e.date) + '" aria-label="日付">' +
+      '<input type="time" id="ev-time-' + id + '" data-f="time" value="' + esc(e.time) + '" aria-label="時刻(任意)">' +
+      '<button type="button" class="x" data-evdel="' + i + '" aria-label="この予定を削除">×</button>' +
+      '</div>' +
+      '<input type="text" id="ev-title-' + id + '" data-f="title" maxlength="200" value="' + esc(e.title) + '" placeholder="内容・場所(例: オンライン説明会、一次面接)" aria-label="内容・場所">' +
+      '<div class="ev-end" hidden><label for="ev-end-' + id + '">終了日(複数日のとき)</label><input type="date" id="ev-end-' + id + '" data-f="endDate" value="' + esc(e.endDate || '') + '"></div>' +
+      '<div class="ev-meta">' +
+      '<span class="ev-opts"><label class="ev-done"><input type="checkbox" id="ev-done-' + id + '" data-f="done"' + (e.done ? ' checked' : '') + '> ' + doneLabel(e) + '</label>' +
+      '<select class="ev-res" id="ev-res-' + id + '" data-f="result" aria-label="結果" hidden>' +
+      '<option value=""' + (!e.result ? ' selected' : '') + '>結果: 未定</option><option value="pass"' + (e.result === 'pass' ? ' selected' : '') + '>結果: 通過</option><option value="fail"' + (e.result === 'fail' ? ' selected' : '') + '>結果: 不合格</option></select></span>' +
+      '<span class="ev-links"><a class="gcal" target="_blank" rel="noopener noreferrer" href="#" hidden>Googleカレンダーに追加 ↗</a>' +
+      '<a class="grem" target="_blank" rel="noopener noreferrer" href="#" hidden>前日リマインドを追加 ↗</a></span>' +
+      '</div>' +
+      '<details' + (e.log ? ' open' : '') + '><summary>振り返りメモ</summary>' +
+      '<textarea id="ev-log-' + id + '" data-f="log" maxlength="5000" placeholder="聞かれたこと、答えたこと、反省、次に聞きたいこと" aria-label="振り返りメモ">' + esc(e.log) + '</textarea></details>' +
+      '</div>';
+  }
+  function refreshGcal(i) {
+    var box = $('ev-list').querySelector('.ev[data-ei="' + i + '"]');
+    if (!box || !fEvents[i]) return;
+    var a = box.querySelector('.gcal'), g = box.querySelector('.grem'), e = fEvents[i];
+    var nm = $('f-name').value.trim();
+    if (e.date) { a.hidden = false; a.setAttribute('href', gcalUrl(nm, e)); }
+    else { a.hidden = true; }
+    if (e.date && e.type === 'deadline') { g.hidden = false; g.setAttribute('href', gcalRemindUrl(nm, e)); }
+    else { g.hidden = true; }
+    box.querySelector('.ev-res').hidden = RES_TYPES.indexOf(e.type) < 0;
+    box.querySelector('.ev-end').hidden = e.type !== 'intern';
+    var lab = box.querySelector('.ev-done');
+    if (lab) lab.lastChild.textContent = ' ' + doneLabel(e);
+  }
+  function renderEv() {
+    var box = $('ev-list');
+    box.innerHTML = fEvents.length
+      ? '<div class="stack">' + fEvents.map(evHtml).join('') + '</div>'
+      : '<p class="hint">まだ予定がありません。右上の「＋ 予定」から追加できます。</p>';
+    $('ev-add').disabled = fEvents.length >= MAX_EV;
+    syncJoin();
+    fEvents.forEach(function (_, i) { refreshGcal(i); });
+    updateSheetCounts();
+  }
+  function subHtml(s, i) {
+    var id = esc(s.id);
+    var opts = '<option value="">テンプレを選んで本文に入れる</option>' + templates.map(function (t) {
+      return '<option value="' + esc(t.id) + '"' + (t.id === s.tid ? ' selected' : '') + '>[' + esc(t.cat) + '] ' + esc(t.title) + '</option>';
+    }).join('');
+    return '<div class="sub" data-si="' + i + '">' +
+      '<div class="sub-top"><input type="text" id="sub-label-' + id + '" data-f="label" maxlength="200" value="' + esc(s.label) + '" placeholder="設問(例: 志望動機 400字)" aria-label="設問">' +
+      '<button type="button" class="x" data-subdel="' + i + '" aria-label="このESを削除">×</button></div>' +
+      '<select id="sub-tid-' + id + '" data-f="tid" aria-label="使うテンプレ">' + opts + '</select>' +
+      '<textarea id="sub-body-' + id + '" data-f="body" maxlength="5000" placeholder="提出した(する)文章" aria-label="提出した文章">' + esc(s.body) + '</textarea>' +
+      '<div class="counter"><span class="mono sub-count">' + countChars(s.body) + '字</span></div>' +
+      '</div>';
+  }
+  function renderSub() {
+    var box = $('sub-list');
+    box.innerHTML = fSubs.length
+      ? '<div class="stack">' + fSubs.map(subHtml).join('') + '</div>'
+      : '<p class="hint">まだESがありません。右上の「＋ ES」から追加できます。</p>';
+    $('sub-add').disabled = fSubs.length >= MAX_SUB;
+    updateSheetCounts();
+  }
+  function renderFit() {
+    $('fit-list').innerHTML = axes.map(function (a) {
+      var v = fScores[a.id] | 0, btns = '';
+      for (var n = 1; n <= 5; n++) btns += '<button type="button" class="rb" data-v="' + n + '" aria-pressed="' + (v === n) + '">' + n + '</button>';
+      btns += '<button type="button" class="rb clear" data-v="0" aria-pressed="' + (v === 0) + '" aria-label="未評価に戻す">未</button>';
+      return '<div class="fit" data-ax="' + esc(a.id) + '"><div class="fit-h"><b>' + esc(a.name) + '</b><span class="chip t-n">' + WLABEL[a.weight] + '</span></div>' +
+        '<div class="rate" role="group" aria-label="' + esc(a.name) + 'の評価">' + btns + '</div></div>';
+    }).join('');
+    var t = fitScore(null, fScores);
+    $('fit-total').textContent = t === null ? '未評価' : t.toFixed(1) + ' / 5';
+  }
+
+  function renderChk() {
+    var box = $('chk-list');
+    if (!fChecks.length) {
+      box.innerHTML = '<p class="hint">項目がありません。</p><div><button type="button" class="btn sm" id="chk-def">標準の4項目を入れる</button></div>';
+    } else {
+      box.innerHTML = '<div class="stack">' + fChecks.map(function (c, i) {
+        return '<div class="chk' + (c.done ? ' done' : '') + '" data-ki="' + i + '">' +
+          '<input type="checkbox" id="chk-d-' + esc(c.id) + '" data-f="done"' + (c.done ? ' checked' : '') + ' aria-label="完了">' +
+          '<input type="text" id="chk-l-' + esc(c.id) + '" data-f="label" maxlength="60" value="' + esc(c.label) + '" aria-label="項目名">' +
+          '<button type="button" class="x" data-kdel="' + i + '" aria-label="この項目を削除">×</button></div>';
+      }).join('') + '</div>';
+    }
+    $('chk-add').disabled = fChecks.length >= MAX_CHK;
+    updateSheetCounts();
+  }
+  function renderRq() {
+    var box = $('f-rq');
+    if (!editingId) { box.innerHTML = '<p class="hint">企業を保存すると、この企業向けの逆質問を追加できます。</p>'; return; }
+    var list = questions.filter(function (q) { return q.cat === '逆質問' && q.cid === editingId; })
+      .sort(function (a, b) { return (b.updatedAt || 0) - (a.updatedAt || 0); });
+    box.innerHTML = (list.length ? '<ul class="list">' + list.map(function (q) {
+      return '<li><button type="button" class="row" data-qid="' + esc(q.id) + '"><span class="r-name">' + esc(q.q) + '</span>' +
+        (q.a ? '<span class="t-prev">' + esc(q.a) + '</span>' : '') + '</button></li>';
+    }).join('') + '</ul>' : '<p class="hint">まだありません。説明会で気になったことを、聞きたいこととして残せます。</p>') +
+      '<div><button type="button" class="btn sm" data-act="newrq">＋ 逆質問を追加</button></div>';
+  }
+
+  function updateStatusLabels() {
+    var bs = $('f-status').querySelectorAll('button');
+    for (var i = 0; i < bs.length; i++) bs[i].textContent = statusLabel(bs[i].getAttribute('data-status'), form.kind);
+  }
+  function syncJoin() {
+    var on = form.kind === 'intern' && form.status === 'offer';
+    $('f-join').hidden = !on;
+    if (!on) return;
+    var has = fEvents.some(function (e) { return e.type === 'intern'; });
+    $('f-jointext').textContent = has ? '参加日は「予定」タブで確認・変更できます。' : '参加日は「予定」タブで入力できます。';
+    $('f-joinbtn').hidden = has;
+  }
+  function openSheet(id, trigger) {
+    opener = trigger || null;
+    editingId = id || null;
+    var it = id ? items.filter(function (x) { return x.id === id; })[0] : null;
+    if (id && !it) return;
+    $('sheetTitle').textContent = it ? '企業を編集' : '企業を追加';
+    $('f-name').value = it ? it.name : '';
+    $('f-role').value = it ? (it.role || '') : '';
+    $('f-next').value = it ? (it.next || '') : '';
+    $('f-url').value = it ? (it.url || '') : '';
+    $('f-note').value = it ? (it.note || '') : '';
+    $('f-review').value = it ? (it.review || '') : '';
+    $('f-impr').value = it ? (it.impression || '') : '';
+    $('f-pros').value = it ? (it.pros || '') : '';
+    $('f-cons').value = it ? (it.cons || '') : '';
+    $('f-decide').value = it ? (it.decide || '') : '';
+    form.kind = it ? it.kind : (filterKind === 'main' ? 'main' : 'intern');
+    form.status = it ? it.status : 'consider';
+    fEvents = it ? sortEvents(it.events).map(function (e) { return Object.assign({}, e); }) : [];
+    fSubs = it ? it.subs.map(function (s) { return Object.assign({}, s); }) : [];
+    fScores = it ? Object.assign({}, it.scores) : {};
+    $('f-err').hidden = true;
+    $('f-del').hidden = !it;
+    $('f-copy').hidden = !it;
+    resetDel();
+    optsPress($('f-kind'), 'data-kind', form.kind);
+    optsPress($('f-status'), 'data-status', form.status);
+    updateStatusLabels();
+    fChecks = it ? it.checks.map(function (c) { return Object.assign({}, c); }) : DEFAULT_CHECKS.map(function (l) { return { id: newId('k'), label: l, done: false }; });
+    refreshUrlLink(); renderEv(); renderChk(); renderSub(); renderFit(); renderRq(); syncJoin();
+    setSheetTab('basic');
+    openOv('overlay');
+    $('form').querySelector('.sbody').scrollTop = 0;
+    $('f-name').focus();
+  }
+  function closeSheet() { resetDel(); closeOv('overlay'); }
+
+  function save(after) {
+    if (busy) return;
+    var name = $('f-name').value.trim();
+    if (!name) { setSheetTab('basic'); $('f-err').hidden = false; $('f-name').focus(); return; }
+    var url = $('f-url').value.trim();
+    if (url && !validUrl(url)) { setSheetTab('basic'); $('f-uerr').hidden = false; $('f-url').focus(); return; }
+    var base = editingId ? items.filter(function (x) { return x.id === editingId; })[0] : null;
+    var now = Date.now();
+    var evs = sortEvents(fEvents.filter(function (e) { return e.date || e.title.trim() || e.log.trim(); }).map(function (e) {
+      return { id: e.id, type: e.type, date: e.date, time: e.date ? e.time : '', endDate: e.type === 'intern' && e.date && e.endDate && e.endDate >= e.date ? e.endDate : '', title: e.title.trim(), log: e.log, result: RES_TYPES.indexOf(e.type) >= 0 ? (e.result || '') : '', done: !!e.done };
+    }));
+    var subs = fSubs.filter(function (s) { return s.label.trim() || s.body.trim(); }).map(function (s) {
+      return { id: s.id, label: s.label.trim(), tid: s.tid, body: s.body };
+    });
+    var sc = {};
+    axes.forEach(function (a) { if (fScores[a.id] >= 1) sc[a.id] = fScores[a.id]; });
+    var obj = {
+      name: name, kind: form.kind, role: $('f-role').value.trim(), status: form.status,
+      next: $('f-next').value.trim(), url: url, note: $('f-note').value.trim(), review: $('f-review').value.trim(), impression: $('f-impr').value.trim(), pros: $('f-pros').value.trim(), cons: $('f-cons').value.trim(), decide: $('f-decide').value.trim(), checks: cleanChecks(fChecks), events: evs, subs: subs, scores: sc,
+      createdAt: (base && base.createdAt) || now, updatedAt: now
+    };
+    busy = true;
+    persist('companies', editingId || newId('c'), obj)
+      .then(function () { done('保存しました', closeSheet); if (typeof after === 'function') after(obj); })
+      .catch(function (e) { fail(e, '保存'); })
+      .then(function () { busy = false; });
+  }
+  function openCourseCopy(o) {
+    openSheet(null, null);
+    $('sheetTitle').textContent = '別コースを追加';
+    $('f-name').value = o.name;
+    $('f-url').value = o.url || '';
+    $('f-review').value = o.review || '';
+    $('f-impr').value = o.impression || '';
+    form.kind = o.kind;
+    optsPress($('f-kind'), 'data-kind', form.kind); updateStatusLabels(); syncJoin(); refreshUrlLink();
+    $('f-role').value = '';
+    $('f-role').focus();
+    toast('企業名・URL・クチコミ・所感を引き継ぎました。コース名を入れてください');
+  }
+  function remove() {
+    var b = $('f-del');
+    if (!armDelete(b, function (t) { delTimer = t; }, null, resetDel)) return;
+    if (busy || !editingId) return;
+    busy = true;
+    store.remove('companies', editingId)
+      .then(function () { done('削除しました', closeSheet); })
+      .catch(function (e) { fail(e, '削除'); })
+      .then(function () { busy = false; });
+  }
+  function markDone(cid, eid) {
+    if (busy) return;
+    var c = items.filter(function (x) { return x.id === cid; })[0];
+    if (!c) return;
+    var obj = toDoc(c);
+    obj.events = c.events.map(function (e) { return e.id === eid ? Object.assign({}, e, { done: true }) : e; });
+    obj.updatedAt = Date.now();
+    busy = true;
+    persist('companies', cid, obj)
+      .then(function () { toast('完了にしました'); })
+      .catch(function (e) { fail(e, '更新'); })
+      .then(function () { busy = false; });
+  }
+  function todoDone(cid) {
+    if (busy) return;
+    var c = items.filter(function (x) { return x.id === cid; })[0];
+    if (!c) return;
+    var obj = toDoc(c);
+    obj.next = '';
+    obj.updatedAt = Date.now();
+    busy = true;
+    persist('companies', cid, obj)
+      .then(function () { toast('完了にしました'); })
+      .catch(function (e) { fail(e, '更新'); })
+      .then(function () { busy = false; });
+  }
+
+  /* ---------- ESテンプレシート ---------- */
+  function resetTDel() { clearTimeout(tDelTimer); var b = $('t-del'); b.textContent = '削除'; b.classList.remove('armed'); }
+  function updateTplUi() {
+    var body = $('t-body').value;
+    var n = countChars(body);
+    var lim = parseInt($('t-limit').value, 10) || 0;
+    var el = $('t-count');
+    el.textContent = n + '字' + (lim ? ' / ' + lim + '字' : '');
+    el.classList.toggle('over', !!lim && n > lim);
+    $('t-skel').disabled = body.trim() !== '';
+  }
+  function openTplSheet(id, trigger) {
+    opener = trigger || null;
+    editingTid = id || null;
+    var t = id ? templates.filter(function (x) { return x.id === id; })[0] : null;
+    if (id && !t) return;
+    $('tSheetTitle').textContent = t ? 'テンプレを編集' : 'テンプレを追加';
+    $('t-title').value = t ? t.title : '';
+    $('t-limit').value = t && t.limit ? t.limit : '';
+    $('t-body').value = t ? (t.body || '') : '';
+    tform.cat = t ? t.cat : (filterCat !== 'all' ? filterCat : CATS[0]);
+    $('t-err').hidden = true;
+    $('t-del').hidden = !t;
+    resetTDel(); optsPress($('t-cat'), 'data-cat', tform.cat); updateTplUi();
+    openOv('tOverlay');
+    $('t-title').focus();
+  }
+  function closeTplSheet() { resetTDel(); closeOv('tOverlay'); }
+  function saveTpl() {
+    if (busy) return;
+    var title = $('t-title').value.trim();
+    if (!title) { $('t-err').hidden = false; $('t-title').focus(); return; }
+    var base = editingTid ? templates.filter(function (x) { return x.id === editingTid; })[0] : null;
+    var now = Date.now();
+    var obj = {
+      title: title, cat: tform.cat, limit: parseInt($('t-limit').value, 10) || 0, body: $('t-body').value,
+      createdAt: (base && base.createdAt) || now, updatedAt: now
+    };
+    busy = true;
+    persist('templates', editingTid || newId('t'), obj)
+      .then(function () { done('保存しました', closeTplSheet); })
+      .catch(function (e) { fail(e, '保存'); })
+      .then(function () { busy = false; });
+  }
+  function removeTpl() {
+    var b = $('t-del');
+    if (!armDelete(b, function (t) { tDelTimer = t; }, null, resetTDel)) return;
+    if (busy || !editingTid) return;
+    busy = true;
+    store.remove('templates', editingTid)
+      .then(function () { done('削除しました', closeTplSheet); })
+      .catch(function (e) { fail(e, '削除'); })
+      .then(function () { busy = false; });
+  }
+  function copyText(text, okMsg, onFail) {
+    var p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject();
+    p.then(function () { toast(okMsg); }).catch(onFail);
+  }
+  function copyTpl(id, trigger) {
+    var t = templates.filter(function (x) { return x.id === id; })[0];
+    if (!t) return;
+    copyText(t.body || '', '「' + t.title + '」をコピーしました', function () {
+      openTplSheet(id, trigger);
+      $('t-body').focus(); $('t-body').select();
+      toast('自動でコピーできなかったため、本文を選択しました');
+    });
+  }
+
+  /* ---------- 面接の質問シート ---------- */
+  function resetQDel() { clearTimeout(qDelTimer); var b = $('q-del'); b.textContent = '削除'; b.classList.remove('armed'); }
+  function qLabels() {
+    var rq = qform.cat === '逆質問';
+    $('q-text-l').textContent = rq ? '聞きたいこと' : '聞かれた質問';
+    $('q-cid-l').textContent = rq ? '聞く相手の企業(任意)' : '聞かれた企業(任意)';
+    $('q-ans-l').textContent = rq ? '聞いた答え・狙い' : '自分の答え・改善メモ';
+    $('q-text').placeholder = rq ? '例: 入社後、若手が最初に任される仕事は何ですか' : '例: 学生時代に力を入れたことは何ですか';
+  }
+  function openQSheet(id, trigger, preset) {
+    opener = trigger || null;
+    editingQid = id || null;
+    var q = id ? questions.filter(function (x) { return x.id === id; })[0] : null;
+    if (id && !q) return;
+    $('qSheetTitle').textContent = q ? '質問を編集' : '質問を追加';
+    $('q-text').value = q ? q.q : '';
+    $('q-ans').value = q ? q.a : '';
+    qform.cat = q ? q.cat : (preset && preset.cat) || (qCat !== 'all' ? qCat : QCATS[0]);
+    var sel = $('q-cid');
+    sel.innerHTML = '<option value="">指定しない</option>' + items.slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name), 'ja'); })
+      .map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join('');
+    sel.value = q && companyName(q.cid) ? q.cid : (!q && preset && companyName(preset.cid) ? preset.cid : '');
+    $('q-err').hidden = true;
+    $('q-del').hidden = !q;
+    resetQDel(); optsPress($('q-cat'), 'data-cat', qform.cat); qLabels();
+    openOv('qOverlay');
+    $('q-text').focus();
+  }
+  function closeQSheet() { resetQDel(); closeOv('qOverlay'); }
+  function saveQ() {
+    if (busy) return;
+    var text = $('q-text').value.trim();
+    if (!text) { $('q-err').hidden = false; $('q-text').focus(); return; }
+    var base = editingQid ? questions.filter(function (x) { return x.id === editingQid; })[0] : null;
+    var now = Date.now();
+    var obj = { q: text, cat: qform.cat, a: $('q-ans').value, cid: $('q-cid').value, createdAt: (base && base.createdAt) || now, updatedAt: now };
+    busy = true;
+    persist('questions', editingQid || newId('q'), obj)
+      .then(function () { done('保存しました', closeQSheet); })
+      .catch(function (e) { fail(e, '保存'); })
+      .then(function () { busy = false; });
+  }
+  function removeQ() {
+    var b = $('q-del');
+    if (!armDelete(b, function (t) { qDelTimer = t; }, null, resetQDel)) return;
+    if (busy || !editingQid) return;
+    busy = true;
+    store.remove('questions', editingQid)
+      .then(function () { done('削除しました', closeQSheet); })
+      .catch(function (e) { fail(e, '削除'); })
+      .then(function () { busy = false; });
+  }
+  function copyAnswer(id, trigger) {
+    var q = questions.filter(function (x) { return x.id === id; })[0];
+    if (!q) return;
+    if (!q.a.trim()) { toast('答えがまだ入っていません'); return; }
+    copyText(q.a, '答えをコピーしました', function () {
+      openQSheet(id, trigger);
+      $('q-ans').focus(); $('q-ans').select();
+      toast('自動でコピーできなかったため、答えを選択しました');
+    });
+  }
+
+  /* ---------- 志望度の軸シート ---------- */
+  function axRowHtml(a, i) {
+    var id = esc(a.id);
+    var opts = [1, 2, 3].map(function (w) { return '<option value="' + w + '"' + (w === a.weight ? ' selected' : '') + '>' + WLABEL[w] + '</option>'; }).join('');
+    return '<div class="axr" data-ai="' + i + '">' +
+      '<input type="text" id="ax-name-' + id + '" data-f="name" maxlength="40" value="' + esc(a.name) + '" placeholder="軸の名前(例: 事業内容)" aria-label="軸の名前">' +
+      '<select id="ax-w-' + id + '" data-f="weight" aria-label="重み">' + opts + '</select>' +
+      '<button type="button" class="x" data-axdel="' + i + '" aria-label="この軸を削除">×</button></div>';
+  }
+  function renderAxEditor() {
+    $('ax-list').innerHTML = fAxes.map(axRowHtml).join('');
+    $('ax-add').disabled = fAxes.length >= MAX_AXES;
+  }
+  function openAxes(trigger) {
+    opener = trigger || null;
+    fAxes = axes.map(function (a) { return Object.assign({}, a); });
+    renderAxEditor();
+    openOv('aOverlay');
+    var first = $('ax-list').querySelector('input'); if (first) first.focus();
+  }
+  function closeAxes() { closeOv('aOverlay'); }
+  function saveAxes() {
+    if (busy) return;
+    var list = cleanAxes(fAxes.map(function (a) { return { id: a.id, name: a.name, weight: a.weight }; }));
+    if (!list.length) { toast('軸を1つ以上入れてください'); return; }
+    busy = true;
+    persist('settings', 'axes', { list: list, updatedAt: Date.now() })
+      .then(function () { axes = list; done('軸を保存しました', closeAxes); render(); if (!$('overlay').hidden) renderFit(); })
+      .catch(function (e) { fail(e, '保存'); })
+      .then(function () { busy = false; });
+  }
+
+  /* ---------- バックアップ(この端末のみ保存のとき) ---------- */
+  var BKEY = 'shukatsu-board-lastbackup';
+  function ymd(d) { return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()); }
+  function buildJson() {
+    var d = store.exportAll();
+    return JSON.stringify({ app: 'shukatsu-board', version: 2, exportedAt: new Date().toISOString(),
+      companies: d.companies, templates: d.templates, questions: d.questions, settings: d.settings }, null, 2);
+  }
+  function showLast() {
+    var v = null;
+    try { v = localStorage.getItem(BKEY); } catch (e) {}
+    var el = $('b-last');
+    if (!v) { el.textContent = 'まだ書き出していません'; return; }
+    var d = new Date(Number(v));
+    el.textContent = '最後の書き出し: ' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+  }
+  function markBackup() { try { localStorage.setItem(BKEY, String(Date.now())); } catch (e) {} showLast(); }
+  function bmsg(t, bad) { var m = $('b-msg'); m.textContent = t; m.className = 'hint' + (bad ? ' bad' : ''); }
+  function cleanPayload(p) {
+    var out = { companies: {}, templates: {}, questions: {}, settings: {}, nc: 0, nt: 0, nq: 0 };
+    Object.keys(p.companies || {}).forEach(function (id) {
+      var o0 = p.companies[id];
+      if (!o0 || typeof o0 !== 'object' || !str(o0.name, 200).trim()) return;
+      var o = normCompany(Object.assign({}, o0));
+      var evs = o.events.slice(0, MAX_EV).map(function (e) {
+        return { id: goodId(e.id) ? e.id : newId('e'), type: validType(e.type), date: e.date, time: e.date ? e.time : '',
+                 endDate: e.endDate, title: str(e.title, 200), log: str(e.log, 5000), result: e.result, done: !!e.done };
+      });
+      var subs = o.subs.slice(0, MAX_SUB).map(function (s) {
+        return { id: goodId(s.id) ? s.id : newId('s'), label: str(s.label, 200), tid: goodId(s.tid) ? s.tid : '', body: str(s.body, 5000) };
+      });
+      out.companies[goodId(id) ? id : newId('c')] = {
+        name: str(o.name, 200), kind: o.kind === 'main' ? 'main' : 'intern', role: str(o.role, 200),
+        status: STATUS.some(function (s) { return s.key === o.status; }) ? o.status : 'consider',
+        next: str(o.next, 300), url: validUrl(str(o.url, 1000)) ? o.url : '', note: str(o.note, 5000), review: str(o.review, 5000), impression: str(o.impression, 5000), pros: str(o.pros, 2000), cons: str(o.cons, 2000), decide: str(o.decide, 2000),
+        events: evs, subs: subs, scores: o.scores, checks: o.checks, createdAt: num(o.createdAt), updatedAt: num(o.updatedAt)
+      };
+      out.nc++;
+    });
+    Object.keys(p.templates || {}).forEach(function (id) {
+      var o = p.templates[id];
+      if (!o || typeof o !== 'object' || !str(o.title, 200).trim()) return;
+      var lim = parseInt(o.limit, 10);
+      out.templates[goodId(id) ? id : newId('t')] = {
+        title: str(o.title, 200), cat: CATS.indexOf(o.cat) >= 0 ? o.cat : 'その他',
+        limit: lim > 0 && lim <= 5000 ? lim : 0, body: str(o.body, 20000), createdAt: num(o.createdAt), updatedAt: num(o.updatedAt)
+      };
+      out.nt++;
+    });
+    Object.keys(p.questions || {}).forEach(function (id) {
+      var o = p.questions[id];
+      if (!o || typeof o !== 'object' || !str(o.q, 500).trim()) return;
+      out.questions[goodId(id) ? id : newId('q')] = {
+        q: str(o.q, 500), cat: QCATS.indexOf(o.cat) >= 0 ? o.cat : 'その他', a: str(o.a, 5000),
+        cid: goodId(o.cid) ? o.cid : '', createdAt: num(o.createdAt), updatedAt: num(o.updatedAt)
+      };
+      out.nq++;
+    });
+    var ax = p.settings && p.settings.axes ? cleanAxes(p.settings.axes.list) : [];
+    if (ax.length) out.settings.axes = { list: ax, updatedAt: Date.now() };
+    return out;
+  }
+  function importText(text) {
+    if (!text || text.length > 2000000) { bmsg('読み込めるデータが見つかりません。', true); return; }
+    var p;
+    try { p = JSON.parse(text); } catch (e) { bmsg('読み込めませんでした。書き出したデータをそのまま貼り付けてください。', true); return; }
+    if (!p || typeof p !== 'object' || p.app !== 'shukatsu-board' || typeof p.companies !== 'object' || typeof p.templates !== 'object') {
+      bmsg('就活ボードのデータではありません。', true); return;
+    }
+    var c = cleanPayload(p);
+    if (!c.nc && !c.nt && !c.nq) { bmsg('取り込める企業・テンプレ・質問がありませんでした。', true); return; }
+    store.merge(c);
+    $('b-paste').value = '';
+    bmsg('企業' + c.nc + '件、テンプレ' + c.nt + '件、質問' + c.nq + '件を読み込みました。');
+  }
+  function openBackup(trigger) {
+    opener = trigger || null;
+    bmsg('', false); showLast();
+    openOv('bOverlay');
+    $('b-file').focus();
+  }
+
+  /* ---------- イベント ---------- */
+  function openFrom(e) {
+    var g = e.target.closest('[data-grpcmp]');
+    if (g) { cmpSel = g.getAttribute('data-grpcmp').split(',').slice(0, 4); av = 'compare'; applyView(); saveUi(); render(); var t = $('cmpTable'); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'nearest' }); return; }
+    var pk = e.target.closest('[data-pick]');
+    if (pk) { togglePick(pk.getAttribute('data-pick')); return; }
+    if (e.target.closest('[data-cmpclear]')) { cmpSel = []; renderCompare(); return; }
+    var d = e.target.closest('[data-done]');
+    if (d) { var p = d.getAttribute('data-done').split('|'); markDone(p[0], p[1]); return; }
+    var td = e.target.closest('[data-todo]');
+    if (td) { todoDone(td.getAttribute('data-todo')); return; }
+    var a = e.target.closest('[data-act="newapp"]');
+    if (a) { openSheet(null, a); return; }
+    var t = e.target.closest('[data-id]');
+    if (t) openSheet(t.getAttribute('data-id'), t);
+  }
+  $('weekBody').addEventListener('click', openFrom);
+  $('list').addEventListener('click', openFrom);
+  $('cmpBody').addEventListener('click', openFrom);
+  $('icsBtn').addEventListener('click', exportIcs);
+  $('tplList').addEventListener('click', function (e) {
+    var n = e.target.closest('[data-act="newtpl"]');
+    if (n) { openTplSheet(null, n); return; }
+    var c = e.target.closest('[data-copy]');
+    if (c) { copyTpl(c.getAttribute('data-copy'), c); return; }
+    var r = e.target.closest('[data-tid]');
+    if (r) openTplSheet(r.getAttribute('data-tid'), r);
+  });
+  $('qList').addEventListener('click', function (e) {
+    var n = e.target.closest('[data-act="newq"]');
+    if (n) { openQSheet(null, n); return; }
+    var c = e.target.closest('[data-qcopy]');
+    if (c) { copyAnswer(c.getAttribute('data-qcopy'), c); return; }
+    var r = e.target.closest('[data-qid]');
+    if (r) openQSheet(r.getAttribute('data-qid'), r);
+  });
+  $('add').addEventListener('click', function (e) {
+    if (tab === 'stock') { if (sv === 'tpl') openTplSheet(null, e.currentTarget); else openQSheet(null, e.currentTarget); }
+    else openSheet(null, e.currentTarget);
+  });
+  document.querySelector('.tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    tab = b.getAttribute('data-tab'); applyView(); saveUi();
+  });
+  $('avSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    av = b.getAttribute('data-av'); applyView(); saveUi();
+  });
+  $('svSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    sv = b.getAttribute('data-sv'); applyView(); saveUi();
+  });
+  $('kindSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    filterKind = b.getAttribute('data-kind'); render();
+  });
+  $('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var f = b.getAttribute('data-flag');
+    if (f) { if (cFlags[f]) delete cFlags[f]; else cFlags[f] = true; }
+    else filterStatus = b.getAttribute('data-st');
+    render();
+  });
+  $('cSearch').addEventListener('input', function (e) { cQuery = e.target.value; renderList(); });
+  $('cSort').addEventListener('change', function (e) { cSort = e.target.value; renderList(); });
+  $('cClear').addEventListener('click', clearFilters);
+  $('tSearch').addEventListener('input', function (e) { tText = e.target.value; renderTpl(); });
+  $('catChips').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    filterCat = b.getAttribute('data-cat'); render();
+  });
+  $('qChips').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    qCat = b.getAttribute('data-qc'); render();
+  });
+  $('phChips').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    phCat = b.getAttribute('data-pc'); renderPh();
+  });
+  $('qSearch').addEventListener('input', function (e) { qText = e.target.value; renderQ(); });
+  $('axBtn').addEventListener('click', function (e) { openAxes(e.currentTarget); });
+  $('fit-axes').addEventListener('click', function (e) { openAxes(e.currentTarget); });
+
+  /* 企業シート */
+  $('form').querySelector('.stabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) setSheetTab(b.getAttribute('data-stab'));
+  });
+  $('f-kind').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    form.kind = b.getAttribute('data-kind'); optsPress($('f-kind'), 'data-kind', form.kind); updateStatusLabels(); syncJoin();
+  });
+  $('f-status').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    form.status = b.getAttribute('data-status'); optsPress($('f-status'), 'data-status', form.status); syncJoin();
+  });
+  function evField(e) {
+    var box = e.target.closest('.ev'); if (!box) return;
+    var i = Number(box.getAttribute('data-ei'));
+    var f = e.target.getAttribute('data-f');
+    if (!f || !fEvents[i]) return;
+    fEvents[i][f] = f === 'done' ? e.target.checked : e.target.value;
+    if (f === 'date' || f === 'endDate' || f === 'time' || f === 'type' || f === 'title') refreshGcal(i);
+  }
+  $('ev-list').addEventListener('input', evField);
+  $('ev-list').addEventListener('change', evField);
+  $('ev-list').addEventListener('click', function (e) {
+    var d = e.target.closest('[data-evdel]'); if (!d) return;
+    fEvents.splice(Number(d.getAttribute('data-evdel')), 1); renderEv();
+  });
+  $('ev-add').addEventListener('click', function () {
+    if (fEvents.length >= MAX_EV) return;
+    var ne = { id: newId('e'), type: 'seminar', date: '', time: '', title: '', log: '', result: '', endDate: '', done: false };
+    fEvents.push(ne); renderEv();
+    var el = $('ev-date-' + ne.id); if (el) el.focus();
+  });
+  $('chk-list').addEventListener('input', function (e) {
+    var row = e.target.closest('.chk'); if (!row) return;
+    var c = fChecks[Number(row.getAttribute('data-ki'))], f = e.target.getAttribute('data-f');
+    if (!c) return;
+    if (f === 'label') c.label = e.target.value;
+  });
+  $('chk-list').addEventListener('change', function (e) {
+    var row = e.target.closest('.chk'); if (!row) return;
+    var c = fChecks[Number(row.getAttribute('data-ki'))];
+    if (!c || e.target.getAttribute('data-f') !== 'done') return;
+    c.done = e.target.checked; row.classList.toggle('done', c.done); updateSheetCounts();
+  });
+  $('chk-list').addEventListener('click', function (e) {
+    var d = e.target.closest('[data-kdel]');
+    if (d) { fChecks.splice(Number(d.getAttribute('data-kdel')), 1); renderChk(); return; }
+    if (e.target.closest('#chk-def')) {
+      fChecks = DEFAULT_CHECKS.map(function (l) { return { id: newId('k'), label: l, done: false }; }); renderChk();
+    }
+  });
+  $('chk-add').addEventListener('click', function () {
+    if (fChecks.length >= MAX_CHK) return;
+    var nk = { id: newId('k'), label: '', done: false };
+    fChecks.push(nk); renderChk();
+    var el = $('chk-l-' + nk.id); if (el) el.focus();
+  });
+  $('f-rq').addEventListener('click', function (e) {
+    var n = e.target.closest('[data-act="newrq"]');
+    if (n) { openQSheet(null, n, { cat: '逆質問', cid: editingId }); return; }
+    var r = e.target.closest('[data-qid]');
+    if (r) openQSheet(r.getAttribute('data-qid'), r);
+  });
+  $('f-joinbtn').addEventListener('click', function () {
+    if (fEvents.length >= MAX_EV) return;
+    var ne = { id: newId('e'), type: 'intern', date: '', time: '', endDate: '', title: '参加', log: '', result: '', done: false };
+    fEvents.push(ne); renderEv(); setSheetTab('ev');
+    var el = $('ev-date-' + ne.id); if (el) el.focus();
+  });
+  $('f-name').addEventListener('input', function () {
+    $('f-err').hidden = true;
+    fEvents.forEach(function (_, i) { refreshGcal(i); });
+  });
+  $('f-url').addEventListener('input', refreshUrlLink);
+
+  $('sub-list').addEventListener('input', function (e) {
+    var box = e.target.closest('.sub'); if (!box) return;
+    var i = Number(box.getAttribute('data-si'));
+    var f = e.target.getAttribute('data-f');
+    if (!fSubs[i] || (f !== 'label' && f !== 'body')) return;
+    fSubs[i][f] = e.target.value;
+    if (f === 'body') box.querySelector('.sub-count').textContent = countChars(e.target.value) + '字';
+  });
+  $('sub-list').addEventListener('change', function (e) {
+    var sel = e.target.closest('select[data-f="tid"]'); if (!sel) return;
+    var box = sel.closest('.sub');
+    var s = fSubs[Number(box.getAttribute('data-si'))]; if (!s) return;
+    if (!sel.value) { s.tid = ''; return; }
+    var t = templates.filter(function (x) { return x.id === sel.value; })[0];
+    if (!t) { sel.value = s.tid || ''; return; }
+    if (s.body.trim()) {
+      toast('本文が入っているため、入れ替えていません。本文を空にしてから選んでください。');
+      sel.value = s.tid || '';
+      return;
+    }
+    s.tid = t.id; s.body = t.body || '';
+    if (!s.label.trim()) s.label = t.title;
+    renderSub();
+  });
+  $('sub-list').addEventListener('click', function (e) {
+    var d = e.target.closest('[data-subdel]'); if (!d) return;
+    fSubs.splice(Number(d.getAttribute('data-subdel')), 1); renderSub();
+  });
+  $('sub-add').addEventListener('click', function () {
+    if (fSubs.length >= MAX_SUB) return;
+    var ns = { id: newId('s'), label: '', tid: '', body: '' };
+    fSubs.push(ns); renderSub();
+    var el = $('sub-label-' + ns.id); if (el) el.focus();
+  });
+  $('fit-list').addEventListener('click', function (e) {
+    var b = e.target.closest('.rb'); if (!b) return;
+    var ax = b.closest('.fit').getAttribute('data-ax');
+    var v = Number(b.getAttribute('data-v'));
+    if (v) fScores[ax] = v; else delete fScores[ax];
+    renderFit();
+  });
+  $('form').addEventListener('submit', function (e) { e.preventDefault(); save(); });
+  $('f-cancel').addEventListener('click', closeSheet);
+  $('f-copy').addEventListener('click', function () { save(openCourseCopy); });
+  $('f-del').addEventListener('click', remove);
+
+  /* テンプレ・質問・軸 */
+  $('t-cat').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    tform.cat = b.getAttribute('data-cat'); optsPress($('t-cat'), 'data-cat', tform.cat);
+  });
+  $('q-cat').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    qform.cat = b.getAttribute('data-cat'); optsPress($('q-cat'), 'data-cat', qform.cat); qLabels();
+  });
+  $('tForm').addEventListener('submit', function (e) { e.preventDefault(); saveTpl(); });
+  $('qForm').addEventListener('submit', function (e) { e.preventDefault(); saveQ(); });
+  $('aForm').addEventListener('submit', function (e) { e.preventDefault(); saveAxes(); });
+  $('t-title').addEventListener('input', function () { $('t-err').hidden = true; });
+  $('q-text').addEventListener('input', function () { $('q-err').hidden = true; });
+  $('t-body').addEventListener('input', updateTplUi);
+  $('t-limit').addEventListener('input', updateTplUi);
+  $('t-skel').addEventListener('click', function () {
+    if ($('t-body').value.trim() !== '') return;
+    $('t-body').value = SKELETON; updateTplUi(); $('t-body').focus();
+  });
+  $('t-cancel').addEventListener('click', closeTplSheet);
+  $('q-cancel').addEventListener('click', closeQSheet);
+  $('a-cancel').addEventListener('click', closeAxes);
+  $('t-del').addEventListener('click', removeTpl);
+  $('q-del').addEventListener('click', removeQ);
+  $('ax-list').addEventListener('input', function (e) {
+    var row = e.target.closest('.axr'); if (!row) return;
+    var a = fAxes[Number(row.getAttribute('data-ai'))]; if (!a) return;
+    var f = e.target.getAttribute('data-f');
+    if (f === 'name') a.name = e.target.value;
+    if (f === 'weight') a.weight = parseInt(e.target.value, 10) || 2;
+  });
+  $('ax-list').addEventListener('change', function (e) {
+    var row = e.target.closest('.axr'); if (!row) return;
+    var a = fAxes[Number(row.getAttribute('data-ai'))];
+    if (a && e.target.getAttribute('data-f') === 'weight') a.weight = parseInt(e.target.value, 10) || 2;
+  });
+  $('ax-list').addEventListener('click', function (e) {
+    var d = e.target.closest('[data-axdel]'); if (!d) return;
+    fAxes.splice(Number(d.getAttribute('data-axdel')), 1); renderAxEditor();
+  });
+  $('ax-add').addEventListener('click', function () {
+    if (fAxes.length >= MAX_AXES) return;
+    var na = { id: newId('a'), name: '', weight: 2 };
+    fAxes.push(na); renderAxEditor();
+    var el = $('ax-name-' + na.id); if (el) el.focus();
+  });
+
+  /* バックアップ */
+  $('backupBtn').addEventListener('click', function (e) { openBackup(e.currentTarget); });
+  $('b-close').addEventListener('click', function () { closeOv('bOverlay'); });
+  $('b-file').addEventListener('click', function () {
+    saveFile('shukatsu-board-' + ymd(new Date()) + '.json', buildJson(), 'application/json')
+      .then(function () { markBackup(); bmsg('ファイルを書き出しました。別の端末へ送って「ファイルを選ぶ」から読み込めます。'); })
+      .catch(function (e) { if (!e || e.code !== 'declined') bmsg('書き出せませんでした。「コピーする」を試してください。', true); });
+  });
+  $('b-copy').addEventListener('click', function () {
+    var json = buildJson();
+    copyText(json, '', function () {
+      $('b-paste').value = json; $('b-paste').focus(); $('b-paste').select();
+      bmsg('自動でコピーできなかったため、下の欄にデータを表示しました。全体をコピーしてください。', true);
+    });
+    var p = navigator.clipboard && navigator.clipboard.writeText;
+    if (p) setTimeout(function () { markBackup(); bmsg('コピーしました。別の端末のこの画面で貼り付けて読み込んでください。'); }, 0);
+  });
+  $('b-pick').addEventListener('click', function () { $('b-input').click(); });
+  $('b-input').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () { importText(String(r.result)); };
+    r.onerror = function () { bmsg('ファイルを読み込めませんでした。', true); };
+    r.readAsText(f);
+    e.target.value = '';
+  });
+  $('b-load').addEventListener('click', function () { importText($('b-paste').value.trim()); });
+
+  /* 背景クリックと Esc で閉じる */
+  $('skinBtn').addEventListener('click', function (e) { opener = e.currentTarget; renderSkins(); openOv('kOverlay'); $('k-close').focus(); });
+  $('k-close').addEventListener('click', function () { closeOv('kOverlay'); });
+  $('skinList').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-skin]'); if (!b) return;
+    applySkin(b.getAttribute('data-skin')); renderSkins();
+  });
+  var CLOSERS = { kOverlay: function () { closeOv('kOverlay'); }, aOverlay: closeAxes, bOverlay: function () { closeOv('bOverlay'); }, qOverlay: closeQSheet, tOverlay: closeTplSheet, overlay: closeSheet };
+  Object.keys(CLOSERS).forEach(function (id) {
+    $(id).addEventListener('mousedown', function (e) { if (e.target === $(id)) CLOSERS[id](); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var order = ['kOverlay', 'aOverlay', 'bOverlay', 'qOverlay', 'tOverlay', 'overlay'];
+    for (var i = 0; i < order.length; i++) if (!$(order[i]).hidden) { CLOSERS[order[i]](); return; }
+  });
+
+  setTimeout(startCheer, 2500);
+  loadUi();
+  buildOpts();
+  applyView();
+  render();
+  boot();
+})();
+</script>
+</body>
+</html>
